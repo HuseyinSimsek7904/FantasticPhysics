@@ -1,0 +1,176 @@
+Some dimers can bond with a monomer and make trimers.
+This reaction is called trimerization reaction.
+
+Trimers can be in two different forms: triangular and linear.
+To find the form of molecule, the longest radius is compared With φ (linearity constant).
+
+    φ = W_1W_2 / (W_1 + W_2)
+
+    table of φ for W_1 and W_2 values
+      |1  2  3  4  5  6  7  8 |
+    --+-----------------------|
+    1 |1  1  1  1  1  1  1  1 |
+    2 |1  1* 2  2  2  2  2  2 |
+    3 |1  2  2  2  2  2* 3  3 |
+    4 |1  2  2  2* 3  3  3  3 |
+    5 |1  2  2  3  3  3  3  4 |
+    6 |1  2  2* 3  3  3* 4  4 |
+    7 |1  2  3  3  3  4  4  4 |
+    8 |1  2  3  3  4  4  4  4*|
+    --+-----------------------+
+    (* means exact result, otherwise rounded to next integer)
+
+If W_3 is the weakest bond, the type of trimer is found comparing W_3 to φ.
+
+- If W_3 is higher than φ, the molecule is a trigonic.
+- If W_3 is equal to φ, the molecule is a perfect linear trimer.
+- If W_3 is less than φ but still positive, the molecule is a strong linear trimer.
+- If W_3 is equal to 0, the molecule is a dormant linear trimer.
+- If W_3 is negative, the molecule is a fragile linear trimer.
+
+1) Triangular trimers (Trigonics):
+    Trigonics are perfect molecules.
+
+               O
+      R_1 W_1 / \ W_2 R_2
+             /   \
+            O --- O
+              W_3
+              R_3
+
+    W_1 > 0
+    W_2 > 0
+    W_3 > 0
+
+    R_3 < R_1 + R_2
+
+    W_1sin ϴ_1 = W_2sin ϴ_2 = W_3sin ϴ_3
+
+    R_1 = 1 / W_1
+    R_2 = 1 / W_2
+    R_3 = 1 / W_3
+    Hᴼ = -W_1^3 - W_2^3 - W_3^3
+
+2) Linear trimers:
+
+        O --- O --- O
+           W_1    W_2
+           R_1    R_2
+        |-----------|
+              W_3
+              R_3
+
+    W_1 > 0
+    W_2 > 0
+
+    R_3 = R_1 + R_2
+
+    2.1) Asymmetric linear trimers:
+        In asymmetric linear trimers, W_1 is not equal to W_2 and therefore R_1 is not equal to R_2.
+
+            O --- O ----- O
+               W_1     W_2
+               R_1     R_2
+            |-------------|
+                   W_3
+                   R_3
+
+        2.1.1) Perfect asymmetric linear trimers:
+                O --- O ----- O
+                  W_1    W_2
+                  R_1    R_2
+                |-------------|
+                       φ
+                       R_3
+
+            R_1 = 1/W_1
+            R_2 = 1/W_2
+            R_3 = 1/W_3 = 1/φ
+
+            Hᴼ = - W_1^3 - W_2^3 - φ^3
+
+    2.2) Symmetric linear trimers:
+        For a symmetric linear trimer to be stable, w_2 / w_1 should be higher than the linear trimerization constant.
+        The linear trimerization constant is cbrt(289) - 8, which is about -1,3885.
+
+        If the molecule is not stable, molecule will split into a monomer and a dimer.
+        This reaction is called detrimerization reaction.
+
+            table of stability for W_1 and W_2 values
+               |1 2 3 4 5 6 7 8|
+            ---+---------------|
+            -1 |* * * * * * * *|
+            -2 |  * * * * * * *|
+            -3 |    * * * * * *|
+            -4 |    * * * * * *|
+            -5 |      * * * * *|
+            -6 |        * * * *|
+            -7 |          * * *|
+            -8 |          * * *|
+            ---+---------------+
+            (* means stable)
+
+        In symmetric linear trimers, W_1 is equal to W_2 and therefore R_1 equals R_2.
+
+            O --- O --- O
+               W_1   W_1
+               R     R
+            |-----------|
+                  W_2
+                  2R
+
+        R = 17 / (16W_1 + 2W_2)
+        Hᴼ = -(8W_1 + W_2)^3 / 289
+        φ = W_1 / 2
+
+        2.2.1) Perfect symmetric linear trimers:
+            W_2 of perfect symmetric linear trimers is equal to linearity constant.
+
+                O --- O --- O
+                   W     W
+                   R     R
+                |-----------|
+                      φ
+                      2R
+
+            Perfect symmetric linear trimers are the most stable linear trimers.
+            Since the W_2 is equal to φ, they have very similar properties to trigonics.
+
+            R = 1/W
+            Hᴼ = - 17 / 8 W^3
+
+        2.2.2) Dormant symmetric linear trimers:
+            W_2 of dormant symmetric linear trimers is equal to zero.
+
+                O --- O --- O
+                   W     W
+                   R     R
+                |-----------|
+                      0
+                      2R
+
+            R = 17 / 16W = 1.0625 1/W
+            Hᴼ = -512 / 289 W^3 ~ -1.771 W^3
+
+        2.2.3) Reverse symmetric linear trimers:
+            In reverse symmetric linear trimers, W_2 is equal to -W_1.
+
+                O --- O --- O
+                   W     W
+                   R     R
+                |-----------|
+                      -W
+                      2R
+
+            R = 17 / 14W ~ 1.214 1/W
+            Hᴼ = -343 / 289 W^3 ~ -1.186 W^3
+
+3) Trimer reactions:
+    3.1.1) Symmetric detrimerization reactions:
+
+            O --- O --- O   ->   O --- O   +   O
+                 H_1               H_2         0
+
+            delta R = (8W_1 + W_2)^3/289 - W_1^3
+
+        This formula will be higher than zero when W_2 / W_1 is higher than cbrt(289) - 8, which is the symmetric trimerization constant.

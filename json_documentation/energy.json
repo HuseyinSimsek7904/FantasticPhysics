@@ -1,0 +1,75 @@
+{
+  "type": "sections",
+  "sections": [
+    {
+      "title": "Potential energy (enthalpy)",
+      "items": [
+        "Since fantastic physics uses basic newtonian force mechanics, the potential energy can be calculated as the integral of force from a distance to infinity.",
+        "/energy.H tsei ru definition",
+        "But this formula will work for two particles.",
+        "To find the total potential energy, all double pairs should be calculated.",
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Standard enthalpy",
+              "items": [
+                "Standard enthalpy is the minimum enthalpy a molecule can take while vibrating.",
+                "It can be calculated by finding the enthalpy of the molecule at the resting distance.",
+                "For perfect molecules, standard enthalpy can be found easily.",
+                "/energy.H_0 tsei definition",
+                "Standard enthalpy is also the amount of energy that will be produced when the molecule is built from scratch.",
+                {
+                  "type": "sections",
+                  "sections": [
+                    {
+                      "title": [
+                        "/constants.C_P",
+                        " constant"
+                      ],
+                      "items": [
+                        [
+                          "The ",
+                          "/constants.C_P",
+                          " constant is defined as the standard enthalpy of a-a' molecule."
+                        ],
+                        "To calculate it, standard enthalpy formula can be used.",
+                        "/constants.C_P definition",
+                        [
+                          "The ",
+                          "/constants.C_P",
+                          " constant is also used to define the Revion unit. 1 Revion energy is the same as ",
+                          "/constants.C_P",
+                          " Tsei energy."
+                        ],
+                        "/energy.H revion ru definition"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Limit distance",
+              "items": [
+                "Under normal circumstances, bosons in molecules will vibrate between the same energy values.",
+                "When a boson is put to infinity and waited, it will stop at the zero energy distance.",
+                "This distance is called limit distance and can be calculated by setting enthalpy to zero.",
+                "/constants.x_lim ru definition",
+                "Area before limit distance is called the high energy area and after that is called low energy area.",
+                "If a boson is in the high energy area of another boson, they will repel each other and (if there is no outer effects) they will never return."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Kinetic energy",
+      "items": [
+        "To calculate kinetic energy, Newton's kinetic energy formula is used (since every boson has the mass 1):",
+        "/energy.E_K tsei pixel second definition"
+      ]
+    }
+  ]
+}

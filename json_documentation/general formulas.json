@@ -1,0 +1,100 @@
+{
+  "type": "sections",
+  "sections": [
+    {
+      "title": "Main unit conversion constants:",
+      "items": [
+        "/constants.r_N definition",
+        "/constants.C_P definition",
+        "/constants.C_f definition",
+        [
+          "1 ",
+          "/constants.r_N",
+          " pixels is 1 ru"
+        ],
+        [
+          "1 ",
+          "/constants.C_P",
+          " Tsei is 1 Revion"
+        ],
+        [
+          "1 ",
+          "/constants.C_f",
+          " Rewton is 1 Gauss"
+        ]
+      ]
+    },
+    {
+      "title": "Forces",
+      "items": [
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Muon force",
+              "items": [
+                "/forces.F_M.definition.rewton pixel",
+                "/forces.F_M.definition.rewton ru",
+                "/forces.F_M.definition.gauss pixel",
+                "/forces.F_M.definition.gauss ru"
+              ]
+            },
+            {
+              "title": "Touch force",
+              "items": [
+                "/forces.F_T.definition.rewton pixel",
+                "/forces.F_T.definition.rewton ru",
+                "/forces.F_T.definition.gauss pixel",
+                "/forces.F_T.definition.gauss ru"
+              ]
+            },
+            {
+              "title": "Net force",
+              "items": [
+                "/forces.F definition.rewton pixel",
+                "/forces.F definition.rewton ru",
+                "/forces.F definition.gauss pixel",
+                "/forces.F definition.gauss ru"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Energy",
+      "items": [
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Kinetic energy:",
+              "items": [
+                "/energy.E_K tsei pixel second definition",
+                "/energy.E_K tsei ru second definition",
+                "/energy.E_K revion pixel second definition",
+                "/energy.E_K revion ru second definition"
+              ]
+            },
+            {
+              "title": "Enthalpy:",
+              "items": [
+                "/energy.H tsei pixel definition",
+                "/energy.H tsei ru definition",
+                "/energy.H revion pixel definition",
+                "/energy.H revion ru definition"
+              ]
+            },
+            {
+              "title": "Standard Enthalpy",
+              "items": [
+                "/energy.H_0 tsei definition",
+                "/energy.H_0 revion definition"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

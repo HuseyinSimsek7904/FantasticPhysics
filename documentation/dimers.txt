@@ -1,0 +1,14 @@
+All dimers are perfect molecules.
+
+    O --- O
+       W
+
+     (W>0)
+
+R = 1/W
+H^0 = -W^3
+
+If there is no outer effect on the molecule, the boson distance can be found.
+To find the other end, this formula can be used:
+
+y = x / 2 * sqrt((3xW + 6) / (3xW - 2)) - x / 2 (x and y are ru)

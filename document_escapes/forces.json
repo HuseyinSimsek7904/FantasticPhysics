@@ -1,0 +1,264 @@
+{
+  "F_M": {
+    "symbol": {
+      "type": "index",
+      "base": "F",
+      "index": "M"
+    },
+    "definition": {
+      "rewton pixel": [
+        "/forces.F_M.symbol",
+        " = -",
+        {
+          "type": "ratio",
+          "numerator": [
+            "/constants.k_M",
+            "W"
+          ],
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "3"
+          }
+        },
+        " (rewtons, d is in pixels)"
+      ],
+      "rewton ru": [
+        "/forces.F_M.symbol",
+        " = -",
+        {
+          "type": "ratio",
+          "numerator": [
+            "/constants.k_M",
+            "W"
+          ],
+          "denominator": [
+            {
+              "type": "power",
+              "base": "d",
+              "power": "3"
+            },
+            {
+              "type": "power",
+              "base": "/constants.r_N",
+              "power": "3"
+            }
+          ]
+        },
+        " (rewtons, d is in pixels)"
+      ],
+      "gauss pixel": [
+        "/forces.F_M.symbol",
+        " = -",
+        {
+          "type": "power index",
+          "base": "r",
+          "power": "2",
+          "index": "N"
+        },
+        {
+          "type": "ratio",
+          "numerator": [
+            "/constants.k_M",
+            "W"
+          ],
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "3"
+          }
+        },
+        " (rewtons, d is in pixels)"
+      ],
+      "gauss ru": [
+        "/forces.F_M.symbol",
+        " = -",
+        {
+          "type": "ratio",
+          "numerator": "W",
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "3"
+          }
+        },
+        " (rewtons, d is in pixels)"
+      ]
+    }
+  },
+  "F_T": {
+    "symbol": {
+      "type": "index",
+      "base": "F",
+      "index": "T"
+    },
+    "definition": {
+      "rewton pixel": [
+        "/forces.F_T.symbol",
+        " = ",
+        {
+          "type": "ratio",
+          "numerator": "/constants.k_T",
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "4"
+          }
+        },
+        " (Rewton, d is in pixels)"
+      ],
+      "rewton ru": [
+        "/forces.F_T.symbol",
+        " = ",
+        {
+          "type": "ratio",
+          "numerator": "/constants.k_M",
+          "denominator": [
+            {
+              "type": "power",
+              "base": "d",
+              "power": "4"
+            },
+            {
+              "type": "power",
+              "base": "/constants.r_N",
+              "power": "3"
+            }
+          ]
+        },
+        " (Rewton, d is in ru)"
+      ],
+      "gauss pixel": [
+        "/forces.F_T.symbol",
+        " = ",
+        {
+          "type": "ratio",
+          "numerator": {
+            "type": "power",
+            "base": "/constants.r_N",
+            "power": "4"
+          },
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "4"
+          }
+        },
+        " (Gauss, d is in pixel)"
+      ],
+      "gauss ru": [
+        "/forces.F_T.symbol",
+        " = ",
+        {
+          "type": "ratio",
+          "numerator": "1",
+          "denominator": {
+            "type": "power",
+            "base": "d",
+            "power": "4"
+          }
+        },
+        " (Gauss, d is in ru)"
+      ]
+    }
+  },
+  "F definition": {
+    "rewton pixel": [
+      "F = ",
+      "/constants.k_M",
+      {
+        "type": "ratio",
+        "numerator": [
+          "/constants.r_N",
+          " - dW"
+        ],
+        "denominator": {
+          "type": "power",
+          "base": "d",
+          "power": "4"
+        }
+      },
+      " (Rewton, d is in pixel)"
+    ],
+    "rewton ru": [
+      "F = ",
+      "/constants.k_M",
+      {
+        "type": "ratio",
+        "numerator": "1 - dW",
+        "denominator": [
+          {
+            "type": "power",
+            "base": "d",
+            "power": "4"
+          },
+          {
+            "type": "power index",
+            "base": "r",
+            "index": "N",
+            "power": "3"
+          }
+        ]
+      },
+      " (Rewton, d is in ru)"
+    ],
+    "gauss pixel": [
+      "F = ",
+      {
+        "type": "power index",
+        "base": "r",
+        "index": "N",
+        "power": "3"
+      },
+      {
+        "type": "ratio",
+        "numerator": [
+          "/constants.r_N",
+          " - dW"
+        ],
+        "denominator": {
+          "type": "power",
+          "base": "d",
+          "power": "4"
+        }
+      },
+      " (Gauss, d is in pixels)"
+    ],
+    "gauss ru": [
+      "F = ",
+      {
+        "type": "ratio",
+        "numerator": "1 - dW",
+        "denominator": {
+          "type": "power",
+          "base": "d",
+          "power": "4"
+        }
+      },
+      " (Gauss, d is in ru)"
+    ]
+  },
+  "R pixel definition": [
+    "R = ",
+    {
+      "type": "ratio",
+      "numerator": "/constants.k_T",
+      "denominator": "/constants.k_M"
+    },
+    {
+      "type": "ratio",
+      "numerator": "1",
+      "denominator": "W"
+    },
+    " (pixels)"
+  ],
+  "R ru definition": [
+    "R = ",
+    {
+      "type": "ratio",
+      "numerator": "1",
+      "denominator": "W"
+    },
+    " (ru)"
+  ]
+}

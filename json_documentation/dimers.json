@@ -1,0 +1,41 @@
+{
+  "type": "list",
+  "items": [
+    "All dimers are perfect molecules.",
+    "",
+    "    O --- O",
+    "       W",
+    "",
+    "     (W>0)",
+    "",
+    "/forces.R ru definition",
+    "/energy.H_0 revion definition",
+    "",
+    "If there is no outer effect on the molecule, the boson distance can be found.",
+    "To find the other end, this formula can be used:",
+    "",
+    [
+      "y = ",
+      {
+        "type": "ratio",
+        "numerator": "x",
+        "denominator": "2"
+      },
+      {
+        "type": "bracket",
+        "items": [
+          {
+            "type": "square root",
+            "items": {
+              "type": "ratio",
+              "numerator": "3xW + 6",
+              "denominator": "3xW - 2"
+            }
+          },
+          " - 1"
+        ]
+      },
+      "(x and y are ru)"
+    ]
+  ]
+}

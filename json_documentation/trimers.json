@@ -1,0 +1,485 @@
+{
+  "type": "list",
+  "items": [
+    "Trimers can be in two different forms: triangular and linear.",
+    "To find the form of molecule, the longest radius is compared with \u03c6 (linearity constant).",
+    "/molecule properties.phi definition",
+    [
+      "- If ",
+      {
+        "type": "index",
+        "base": "W",
+        "index": "3"
+      },
+      " is higher than \u03c6, the molecule is a trigonic."
+    ],
+    [
+      "- If ",
+      {
+        "type": "index",
+        "base": "W",
+        "index": "3"
+      },
+      " is equal to \u03c6, the molecule is a perfect linear trimer."
+    ],
+    [
+      "- If ",
+      {
+        "type": "index",
+        "base": "W",
+        "index": "3"
+      },
+      " is less than \u03c6 but still positive, the molecule is a stable linear trimer."
+    ],
+    [
+      "- If ",
+      {
+        "type": "index",
+        "base": "W",
+        "index": "3"
+      },
+      " is equal to 0, the molecule is a dormant linear trimer."
+    ],
+    [
+      "- If ",
+      {
+        "type": "index",
+        "base": "W",
+        "index": "3"
+      },
+      " is negative, the molecule is an unstable linear trimer."
+    ],
+    {
+      "type": "sections",
+      "sections": [
+        {
+          "title": "Triangular trimers (trigonics)",
+          "items": [
+            "Trigonics are perfect molecules.",
+            "                O",
+            [
+              {
+                "type": "index",
+                "base": "R",
+                "index": "1"
+              },
+              " ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "1"
+              },
+              "  /  \\ ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "2"
+              },
+              " ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "2"
+              }
+            ],
+            "              /     \\",
+            "            O --- O",
+            [
+              "               ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "3"
+              }
+            ],
+            [
+              "               ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "3"
+              }
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "1"
+              },
+              " > 0"
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "2"
+              },
+              " > 0"
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "3"
+              },
+              " > 0"
+            ],
+            [
+              {
+                "type": "index",
+                "base": "R",
+                "index": "3"
+              },
+              " < ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "1"
+              },
+              " + ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "2"
+              }
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "1"
+              },
+              "sin \u03f4_1 = ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "2"
+              },
+              "sin \u03f4_2 = ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "3"
+              },
+              "sin \u03f4_3"
+            ],
+            "/molecule properties.perfect molecules.trimers.asymmetric.R_1 definition",
+            "/molecule properties.perfect molecules.trimers.asymmetric.R_2 definition",
+            "/molecule properties.perfect molecules.trimers.asymmetric.R_3 definition",
+            "/molecule properties.perfect molecules.trimers.asymmetric.H_0 definition"
+          ]
+        },
+        {
+          "title": "Linear trimers",
+          "items": [
+            "        O --- O --- O",
+            [
+              "           ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "1"
+              },
+              "    ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "2"
+              }
+            ],
+            [
+              "           ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "1"
+              },
+              "     ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "2"
+              }
+            ],
+            "        |--------------|",
+            [
+              "              ",
+              {
+                "type": "index",
+                "base": "W",
+                "index": "3"
+              }
+            ],
+            [
+              "              ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "3"
+              }
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "1"
+              },
+              " > 0"
+            ],
+            [
+              {
+                "type": "index",
+                "base": "W",
+                "index": "2"
+              },
+              " > 0"
+            ],
+            [
+              {
+                "type": "index",
+                "base": "R",
+                "index": "3"
+              },
+              " = ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "1"
+              },
+              " + ",
+              {
+                "type": "index",
+                "base": "R",
+                "index": "2"
+              }
+            ],
+            {
+              "type": "sections",
+              "sections": [
+                {
+                  "title": "Asymmetric linear trimers",
+                  "items": [
+                    "            O --- O ----- O",
+                    [
+                      "               ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "1"
+                      },
+                      "     ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "2"
+                      }
+                    ],
+                    [
+                      "               ",
+                      {
+                        "type": "index",
+                        "base": "R",
+                        "index": "1"
+                      },
+                      "      ",
+                      {
+                        "type": "index",
+                        "base": "R",
+                        "index": "2"
+                      }
+                    ],
+                    "             |---------------|",
+                    [
+                      "                   ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "3"
+                      }
+                    ],
+                    [
+                      "                   ",
+                      {
+                        "type": "index",
+                        "base": "R",
+                        "index": "3"
+                      }
+                    ],
+                    {
+                      "type": "sections",
+                      "sections": [
+                        {
+                          "title": "Perfect asymmetric linear trimers",
+                          "items": [
+                            [
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "3"
+                              },
+                              " of perfect asymmetric linear trimers is equal to linearity constant."
+                            ],
+                            "            O --- O ----- O",
+                            [
+                              "               ",
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "1"
+                              },
+                              "     ",
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "2"
+                              }
+                            ],
+                            [
+                              "               ",
+                              {
+                                "type": "index",
+                                "base": "R",
+                                "index": "1"
+                              },
+                              "     ",
+                              {
+                                "type": "index",
+                                "base": "R",
+                                "index": "2"
+                              }
+                            ],
+                            "            |----------------|",
+                            "                   \u03c6",
+                            [
+                              "                   ",
+                              {
+                                "type": "index",
+                                "base": "R",
+                                "index": "3"
+                              }
+                            ],
+                            "/molecule properties.perfect molecules.trimers.asymmetric.R_1 definition",
+                            "/molecule properties.perfect molecules.trimers.asymmetric.R_2 definition",
+                            "/molecule properties.perfect molecules.trimers.asymmetric.R_3 definition",
+                            "/molecule properties.perfect molecules.trimers.asymmetric.H_0 definition"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "Symmetric linear trimers",
+                  "items": [
+                    "            O --- O --- O",
+                    [
+                      "                ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "1"
+                      },
+                      "   ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "1"
+                      }
+                    ],
+                    "                R      R",
+                    "             |-------------|",
+                    [
+                      "                    ",
+                      {
+                        "type": "index",
+                        "base": "W",
+                        "index": "2"
+                      }
+                    ],
+                    "                    2R",
+                    [
+                      "R = ",
+                      {
+                        "type": "ratio",
+                        "numerator": "17",
+                        "denominator": [
+                          "16",
+                          {
+                            "type": "index",
+                            "base": "W",
+                            "index": "1"
+                          },
+                          " + 2",
+                          {
+                            "type": "index",
+                            "base": "W",
+                            "index": "2"
+                          }
+                        ]
+                      }
+                    ],
+                    [
+                      "/energy.H_0",
+                      " = -",
+                      {
+                        "type": "ratio",
+                        "numerator": {
+                          "type": "power",
+                          "base": {
+                            "type": "bracket",
+                            "items": [
+                              "8",
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "1"
+                              },
+                              " + ",
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "2"
+                              }
+                            ]
+                          },
+                          "power": "3"
+                        },
+                        "denominator": "289"
+                      }
+                    ],
+                    {
+                      "type": "sections",
+                      "sections": [
+                        {
+                          "title": "Perfect symmetric linear trimers",
+                          "items": [
+                            [
+                              {
+                                "type": "index",
+                                "base": "W",
+                                "index": "2"
+                              },
+                              " of perfect symmetric linear trimers is equal to linearity constant."
+                            ],
+                            "                O --- O --- O",
+                            "                    W     W",
+                            "                    R      R",
+                            "                |--------------|",
+                            "                        \u03c6",
+                            "                        2R",
+                            "/molecule properties.perfect molecules.trimers.symmetric.R definition",
+                            "/molecule properties.perfect molecules.trimers.symmetric.H_0 definition"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

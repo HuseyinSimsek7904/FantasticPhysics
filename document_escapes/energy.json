@@ -1,0 +1,200 @@
+{
+  "H_0": {
+    "type": "index",
+    "base": "H",
+    "index": "0"
+  },
+  "E_K": {
+    "type": "index",
+    "base": "E",
+    "index": "K"
+  },
+  "H tsei pixel definition": [
+    "H = ",
+    "/constants.k_M",
+    {
+      "type": "ratio",
+      "numerator": [
+        "2",
+        "/constants.r_N",
+        " - 3xW"
+      ],
+      "denominator": [
+        "6",
+        {
+          "type": "power",
+          "base": "x",
+          "power": "3"
+        }
+      ]
+    },
+    " (Tsei, x is in pixel)"
+  ],
+  "H tsei ru definition": [
+    "H = ",
+    {
+      "type": "ratio",
+      "numerator": "2 - 3xW",
+      "denominator": [
+        "6",
+        {
+          "type": "power",
+          "base": "x",
+          "power": "3"
+        },
+        {
+          "type": "power",
+          "base": "/constants.r_N",
+          "power": "2"
+        }
+      ]
+    },
+    " (Tsei, x is in ru)"
+  ],
+  "H revion pixel definition": [
+    "H = ",
+    {
+      "type": "power",
+      "base": "/constants.r_N",
+      "power": "2"
+    },
+    {
+      "type": "ratio",
+      "numerator": [
+        "2",
+        "/constants.r_N",
+        "- 3xW"
+      ],
+      "denominator": {
+        "type": "power",
+        "base": "x",
+        "power": "3"
+      }
+    },
+    " (Revion, x is in pixel)"
+  ],
+  "H revion ru definition": [
+    "H = ",
+    {
+      "type": "ratio",
+      "numerator": "2 - 3xW",
+      "denominator": {
+        "type": "power",
+        "base": "x",
+        "power": "3"
+      }
+    },
+    " (Revion, x is in ru)"
+  ],
+  "H_0 revion definition": [
+    "/energy.H_0",
+    " = -",
+    {
+      "type": "power",
+      "base": "W",
+      "power": "3"
+    },
+    " (Revion)"
+  ],
+  "H_0 tsei definition": [
+    "/energy.H_0",
+    " = - ",
+    {
+      "type": "ratio",
+      "numerator": [
+        "/constants.k_M",
+        {
+          "type": "power",
+          "base": "W",
+          "power": "3"
+        }
+      ],
+      "denominator": [
+        {
+          "type": "power index",
+          "base": "6r",
+          "power": "2",
+          "index": "N"
+        }
+      ]
+    },
+    " (Tsei)"
+  ],
+  "E_K tsei pixel second definition": [
+    "/energy.E_K",
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "1",
+      "denominator": "2"
+    },
+    {
+      "type": "power",
+      "base": "V",
+      "power": "2"
+    },
+    " (Tsei, V is pixels per second)"
+  ],
+  "E_K tsei ru second definition": [
+    "/energy.E_K",
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "1",
+      "denominator": "2"
+    },
+    {
+      "type": "power",
+      "base": "V",
+      "power": "2"
+    },
+    {
+      "type": "power",
+      "base": "/constants.r_N",
+      "power": "3"
+    },
+    " (Tsei, V is ru per second)"
+  ],
+  "E_K revion pixel second definition": [
+    "/energy.E_K",
+    " = 3",
+    {
+      "type": "ratio",
+      "numerator": [
+        {
+          "type": "power",
+          "base": "V",
+          "power": "2"
+        },
+        {
+          "type": "power",
+          "base": "/constants.r_N",
+          "power": "3"
+        }
+      ],
+      "denominator": "/constants.k_M"
+    },
+    " (Revion, V is pixel per second)"
+  ],
+  "E_K revion ru second definition": [
+    "/energy.E_K",
+    " = 3",
+    {
+      "type": "ratio",
+      "numerator": [
+        {
+          "type": "power",
+          "base": "V",
+          "power": "2"
+        },
+        {
+          "type": "power",
+          "base": "/constants.r_N",
+          "power": "5"
+        }
+      ],
+      "denominator": "/constants.k_M"
+    },
+    " (Revion, V is ru per second)"
+  ]
+}

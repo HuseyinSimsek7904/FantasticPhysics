@@ -1,0 +1,51 @@
+Main unit of energy is Tsei.
+
+1) Potential energy (enthalpy):
+    Since fantastic physics uses basic newtonian force mechanics, the potential energy can be calculated as the integral of force from a distance to infinity.
+
+        E_P = H = - k_M (2 - 3xW) / 6x^3r_n^2 (Tsei and x is in ru)
+
+    But this formula will work for two particles.
+    To find the total potential energy, all double pairs should be calculated.
+
+    1.1) Standard enthalpy:
+        Standard enthalpy is the minimum enthalpy a molecule can take while vibrating.
+        It can be calculated by finding the enthalpy of the molecule at the resting distance.
+
+        For perfect molecules, standard enthalpy can be found easily.
+
+             H^0 = - k_M / 6r_n^2W^3 (Tsei)
+
+        Standard enthalpy is also the amount of energy that will be produced when the molecule is built from scratch.
+
+        The C_P constant is defined as the standard enthalpy of a-a' molecule.
+        To calculate it, standard enthalpy formula can be used.
+
+            C_P = k_M / 6r_n^2
+
+        The C_P constant is also used to define the Revion unit. 1 Revion energy is the same as C_P Tsei energy.
+
+            H = (2 - 3xW) / x^3 (Revion and x is in ru)
+            H^0 = - 1 / W^3 (Revion)
+
+    1.2) Limit distance:
+        Under normal circumstances, bosons in molecules will vibrate between the same energy values.
+        When a boson is put to infinity and waited, it will stop at the zero energy distance.
+        This distance is called limit distance and can be calculated by setting enthalpy to zero.
+
+            x_lim = 2 / 3W (ru)
+
+        Area before limit distance is called the high energy area and after that is called low energy area.
+        If a boson is in the high energy area of another boson, they will repel each other and (if there is no outer effects) they will never retu",
+                  {
+                    "type": "index",
+                    "base": "r",
+                    "index": "N"
+                  },
+                  ".
+
+2) Kinetic energy:
+    To calculate kinetic energy, Newton's kinetic energy formula is used (since every boson has the mass 1, there is no m):
+
+        E_K = V^2 / 2 (Tsei and V is pixels per second)
+        E_K = V^2 / (2C_P) (Revion and V is pixels per second)

@@ -1,0 +1,85 @@
+{
+  "type": "sections",
+  "sections": [
+    {
+      "title": "Muon force",
+      "items": [
+        "Muon force is the force caused by the muon properties of bosons.",
+        "/forces.F_M rewton pixel definition",
+        [
+          "/constants.k_M",
+          " here is the muon constant, W is muon number and d is distance (in pixels)."
+        ]
+      ]
+    },
+    {
+      "title": "Touch force",
+      "items": [
+        "Touch force is the force that helps keep the bosons away from each other.",
+        "/forces.F_T rewton pixel definition",
+        [
+          "/constants.k_T",
+          " here is the touch constant and d is distance (in pixels)."
+        ]
+      ]
+    },
+    {
+      "title": "Net force",
+      "items": [
+        "Net force is how much the bosons will repel. If the value is negative, bosons attract.",
+        "Net force can be calculated by summing muon and touch forces.",
+        "/forces.F_N rewton pixel definition",
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Resting distance",
+              "items": [
+                "The balance distance of two bosons is called resting distance, which can be found using net force.",
+                "R must be found to calculate standard enthalpy.",
+                "For perfect molecules, R can be calculated easily.",
+                "/forces.R pixel definition"
+              ]
+            },
+            {
+              "title": [
+                "/constants.r_N",
+                " constant"
+              ],
+              "items": [
+                [
+                  "The ",
+                  "/constants.r_N",
+                  " constant is defined as the resting distance of bosons in first degree dimers."
+                ],
+                [
+                  "To calculate ",
+                  "/constants.r_N",
+                  ", perfect resting distance formula can be used."
+                ],
+                "/constants.r_N definition"
+              ]
+            },
+            {
+              "title": "Ru unit",
+              "items": [
+                [
+                  "1 ru distance is defined as ",
+                  "/constants.r_N",
+                  " pixels distance."
+                ],
+                "/forces.R ru definition",
+                [
+                  "Fnet can be recalculated for the ru unit using d = x",
+                  "/constants.r_N",
+                  "."
+                ],
+                "/forces.F_N rewton ru definition"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

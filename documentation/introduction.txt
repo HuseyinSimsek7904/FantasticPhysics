@@ -1,0 +1,35 @@
+1) Bosons:
+    Bosons in fantastic physics are the main particles.
+    They have a position and a velocity in the space.
+    The change of velocity is defined as the force.
+    Every boson contains properties called muons.
+
+2) Muons:
+    Muons can take the values -1, 0 or 1. Those are used to calculate the muon force.
+    The muon force changes with distance and muon number.
+    That muon number determines whether particles attract or repel each other and how strong is that force.
+    When muon number is positive, particles attract each other, and when negative they repel.
+    Muon number is calculated for each muon property separately and then summed.
+
+    There are 2 types of muons: normal and reversed.
+
+    2.1) Normal muons:
+        Those muons are called a, b, c and d.
+        When calculating the muon number of normal muons, the properties of bosons are multiplied and negated.
+        Since it is negated, two same muons repel.
+
+    2.2) Reversed muons:
+        Those muons are called x, y and z.
+        When calculating the muon number of normal muons, the properties of bosons are only multiplied.
+        Since it is not negated, two same muons attract.
+
+3) Molecules:
+    Molecules are stable groups of bosons.
+    For a molecule with n bosons to be possible, it must contain at least n-1 bonds. But that does not guarantee it to be possible.
+
+    3.1) Perfect molecules:
+        All bosons of perfect molecules have 0 net force with each other.
+        Which means distances can directly be calculated as 1/W.
+
+        R = 1 / W
+        H^0 = - W_1^3 - W_2^3 - ...

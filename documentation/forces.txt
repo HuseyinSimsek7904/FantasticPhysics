@@ -1,0 +1,49 @@
+In fantastic physics, there are 2 fundamental forces: muon force and touch force.
+
+1) Muon force:
+    Muon force is the force caused by the muon properties of bosons.
+
+        F_M = - k_MW / d^3
+
+    k_M here is the muon constant, W is muon number and d is distance (in pixels).
+
+2) Touch force:
+    Touch force is the force that helps keep the bosons away from each other.
+
+        F_T = k_T / d^4
+
+    k_T here is the touch constant and d is distance (in pixels).
+
+4) Net force:
+    Net force is how much the bosons will repel. If the value is negative, bosons attract.
+    Net force can be calculated by summing muon and touch forces.
+
+        F_net = F_M + F_T = k_T / d^4 - k_MW / d^3 (d is pixels)
+
+    Which can be simplified as:
+
+        F_net = k_M(r_n - Wd) / d^4 (d is pixels)
+
+    4.1) Resting distance:
+        The balance distance of two bosons is called resting distance, which can be found using Fnet = 0.
+        For perfect molecules can be calculated easily.
+        For others, analysis is required.
+        R must be found to calculate standard enthalpy.
+
+            d = R = k_T / k_M / W (pixel)
+
+    4.2) r_n constant:
+        The r_n constant is defined as the distance of a and a' bosons that does not attract or repel.
+        To calculate r_n, d = d = k_T / k_M / W can be used.
+
+            r_n = k_T / k_M (pixel)
+
+    4.3) Ru unit:
+        1 ru distance is the same as r_n pixels distance.
+
+            R = 1 / W (ru)
+
+        Fnet can be recalculated for the ru unit using d = xr_n.
+        When that is calculated and simplified, this is the result:
+
+            F_net = k_M(1 - Wx) / (x^4r_n^3) (x is ru)

@@ -1,0 +1,101 @@
+{
+  "r_N": {
+    "type": "index",
+    "base": "r",
+    "index": "N"
+  },
+  "k_M": {
+    "type": "index",
+    "base": "k",
+    "index": "M"
+  },
+  "k_T": {
+    "type": "index",
+    "base": "k",
+    "index": "T"
+  },
+  "C_P": {
+    "type": "index",
+    "base": "C",
+    "index": "P"
+  },
+  "C_f": {
+    "type": "index",
+    "base": "C",
+    "index": "f"
+  },
+  "x_lim": {
+    "type": "index",
+    "base": "x",
+    "index": "lim"
+  },
+  "r_N definition": [
+    "/constants.r_N",
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "/constants.k_T",
+      "denominator": "/constants.k_M"
+    }
+  ],
+  "C_P definition": [
+    {
+      "type": "index",
+      "base": "C",
+      "index": "P"
+    },
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": {
+        "type": "index",
+        "base": "k",
+        "index": "M"
+      },
+      "denominator": {
+        "type": "power index",
+        "base": "6r",
+        "power": "2",
+        "index": "N"
+      }
+    }
+  ],
+  "C_f definition": [
+    {
+      "type": "index",
+      "base": "C",
+      "index": "P"
+    },
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "/constants.k_M",
+      "denominator": {
+        "type": "power",
+        "base": "/constants.r_N",
+        "power": "3"
+      }
+    }
+  ],
+  "x_lim pixel definition": [
+    "/constants.x_lim",
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "2",
+      "denominator": "3W"
+    },
+    "/constants.r_N definition",
+    " (pixels)"
+  ],
+  "x_lim ru definition": [
+    "/constants.x_lim",
+    " = ",
+    {
+      "type": "ratio",
+      "numerator": "2",
+      "denominator": "3W"
+    },
+    " (ru)"
+  ]
+}

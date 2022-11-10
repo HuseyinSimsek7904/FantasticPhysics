@@ -1,0 +1,71 @@
+{
+  "type": "sections",
+  "sections": [
+    {
+      "title": "Bosons",
+      "items": [
+        "Bosons in fantastic physics are the main particles.",
+        "They have a position and a velocity in the space.",
+        "The change of velocity is defined as the force.",
+        "Every boson contains properties called muons."
+      ]
+    },
+    {
+      "title": "Muons",
+      "items": [
+        "Muons can take the values -1, 0 or 1. Those are used to calculate the muon force.",
+        "The muon force changes with distance and muon number.",
+        "That muon number determines whether or not particles attract or repel each other and how strong is that force.",
+        "When muon number is positive, particles attract each other, and when negative they repel.",
+        "Muon number is calculated for each muon property separately and then summed.",
+        "There are 2 types of muons: normal and reversed.",
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Normal muons",
+              "items": [
+                "Those muons are called a, b, c and d.",
+                "When calculating the muon number of normal muons, the properties of bosons are multiplied and negated.",
+                "Since it is negated, two same muons repel."
+              ]
+            },
+            {
+              "title": "Reversed muons",
+              "items": [
+                "Those muons are called x, y and z.",
+                "When calculating the muon number of normal muons, the properties of bosons are only multiplied.",
+                "Since it is not negated, two same muons attract."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Molecules",
+      "items": [
+        "Molecules are stable groups of bosons.",
+        "For a molecule with n bosons to be possible, it must contain at least n-1 positive bonds.",
+        [
+          "For a reaction to happen regularly, the ",
+          "/energy.H_0",
+          "difference should be negative."
+        ],
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "title": "Perfect molecules",
+              "items": [
+                "All bosons of perfect molecules have 0 net force with each other.",
+                "/forces.R ru definition",
+                "/energy.H_0 revion definition"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

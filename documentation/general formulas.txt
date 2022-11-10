@@ -1,0 +1,40 @@
+Main unit conversion constants:
+	r_n = k_T / k_M
+	C_P = k_M / (6r_n^2)
+	C_F = k_M / r_n^3
+
+	1 r_n pixels is 1 ru
+	1 C_P Tsei is 1 Revion
+	1 C_F Rewton is 1 Gauss
+
+Forces:
+	F_M = -k_MW / d^3 (Rewton, d is in pixels)
+	F_M = -k_MW / (dr_n)^3 (Rewton, d is in ru)
+	F_M = -r_n^3W / d^3 (Gauss, d is in pixels)
+	F_M = -W / d^3 (Gauss, d is in ru)
+
+	F_T = k_T / d^4 (Rewton, d is in pixels)
+	F_T = k_T / (dr_n)^4 (Rewton, d is in ru)
+	F_T = r_n^4 / d^4 (Gauss, d is in pixels)
+	F_T = 1 / d^4 (Gauss, d is in ru)
+
+	F_net = k_M(r_n - Wd) / d^4 (Rewton, d is in pixels)
+	F_net = k_M(1 - Wd) / d^4 / r_n^3 (Rewton, d is in ru)
+	F_net = r_n^3(r_n - Wd) / d^4 (Gauss, d is in pixels)
+	F_net = (1 - Wd) / d^4 (Gauss, d is in ru)
+
+Kinetic energy:
+	E_K = 1/2V^2 (Tsei, V is in pixel/seconds)
+	E_K = 1/2(Vr_n)^2 (Tsei, V is in ru/seconds)
+	E_K = 3V^2r_n^3 / k_M (Revion, V is in pixel/seconds)
+	E_K = 3V^2r_n^5 / k_M (Revion, V is in ru/seconds)
+
+Enthalpy:
+	H_net = k_M(2r_n - 3Wd) / (6d^3) (Tsei, d is in pixels)
+	H_net = k_M(2 - 3Wd) / (6d^3r_n^2) (Tsei, d is in pixels)
+	H_net = r_n^2(2r_n - 3Wd) / d^3 (Revion, d is in pixels)
+	H_net = (2 - 3Wd) / d^3 (Revion, d is in ru)
+
+Perfect molecule properties:
+	R = r_n / W (pixels)
+	R = 1 / W (ru)
