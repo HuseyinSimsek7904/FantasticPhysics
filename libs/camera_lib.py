@@ -1,4 +1,4 @@
-from libs import vector_lib, options_lib, physics_lib
+from libs import options_lib, physics_lib
 import pygame
 import math
 
@@ -10,11 +10,11 @@ class Camera:
         self.screen_size = screen_size
         self.screen_middle = screen_middle
 
-        self.pos = vector_lib.Vector(0, 0)
+        self.pos = pygame.Vector2(0, 0)
         self.zoom_amount = 1
 
         self.grid_zoom = 1
-        self.background = pygame.Surface(self.screen_size.tuple)
+        self.background = pygame.Surface(tuple(self.screen_size))
         self.get_background()
 
     def real_to_screen_x(self, number):
@@ -29,11 +29,11 @@ class Camera:
     def screen_to_real_y(self, number):
         return int((number - self.screen_middle.y) / self.zoom_amount + self.pos.y)
 
-    def real_to_screen(self, vector: vector_lib.Vector):
+    def real_to_screen(self, vector: pygame.Vector2):
         new = (vector - self.pos) * self.zoom_amount + self.screen_middle
-        return vector_lib.Vector(int(new.x), int(new.y))
+        return pygame.Vector2(int(new.x), int(new.y))
 
-    def screen_to_real(self, vector: vector_lib.Vector):
+    def screen_to_real(self, vector: pygame.Vector2):
         return (vector - self.screen_middle) / self.zoom_amount + self.pos
 
     def is_visible_screen(self, vector):
@@ -57,12 +57,12 @@ class Camera:
 
         self.get_background()
 
-    def focus_on(self, vector: vector_lib.Vector):
+    def focus_on(self, vector: pygame.Vector2):
         self.pos = vector.copy()
         self.get_background()
 
     def move(self, amount):
-        self.pos.add_(*amount, -1 / self.zoom_amount)
+        self.pos += -pygame.Vector2(*amount) / self.zoom_amount
         self.get_background()
 
     def get_background(self):

@@ -1,8 +1,10 @@
-from libs import vector_lib, options_lib, physics_lib
+from libs import options_lib, physics_lib
+
+import pygame
 
 
 class Particle:
-    def __init__(self, a, b, c, x, y, z, pos: vector_lib.Vector, vel: vector_lib.Vector = None):
+    def __init__(self, a, b, c, x, y, z, pos: pygame.Vector2, vel: pygame.Vector2 = None):
         self.a = a
         self.b = b
         self.c = c
@@ -16,7 +18,7 @@ class Particle:
         self.pos = pos
 
         if vel is None:
-            self.vel = vector_lib.Vector(0, 0)
+            self.vel = pygame.Vector2(0, 0)
 
         else:
             self.vel = vel
@@ -59,12 +61,12 @@ class Particle:
         return self.a * 50 + self.z * 50 + 100, self.b * 50 + self.y * 50 + 100, self.c * 50 + self.x * 50 + 100
 
     def update(self, vel_change):
-        self.vel.add(vel_change, physics_lib.delta_time)
+        self.vel += vel_change * physics_lib.delta_time
 
         self.vel.x = self.vel.x
         self.vel.y = self.vel.y
 
-        self.pos.add(self.vel, physics_lib.delta_time)
+        self.pos += self.vel * physics_lib.delta_time
 
     def copy(self):
         return Particle(self.a, self.b, self.c, self.x, self.y, self.z, self.pos.copy(), self.vel.copy())

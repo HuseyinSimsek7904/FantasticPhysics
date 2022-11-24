@@ -1,4 +1,4 @@
-from libs import options_lib, vector_lib, physics_lib, particle_lib, camera_lib, window_lib
+from libs import options_lib, physics_lib, particle_lib, camera_lib, window_lib
 import pygame
 import math
 import random
@@ -6,16 +6,16 @@ import random
 
 class Game:
     def __init__(self):
-        self.screen_size: vector_lib.Vector = vector_lib.Vector(*options_lib.screen_size)
+        self.screen_size: pygame.Vector2 = pygame.Vector2(*options_lib.screen_size)
         self.window = window_lib.Window(self.screen_size)
 
         self.particle_radius_square = options_lib.particle_radius ** 2
 
-        self.real_mouse_pos = vector_lib.Vector(0, 0)
-        self.screen_mouse_pos = vector_lib.Vector(0, 0)
+        self.real_mouse_pos = pygame.Vector2(0, 0)
+        self.screen_mouse_pos = pygame.Vector2(0, 0)
 
-        self.screen_size = vector_lib.Vector(*self.window.window.get_size())
-        self.screen_middle: vector_lib.Vector = self.screen_size / 2
+        self.screen_size = pygame.Vector2(*self.window.window.get_size())
+        self.screen_middle: pygame.Vector2 = self.screen_size / 2
 
         self.simulating = True
 
@@ -33,7 +33,7 @@ class Game:
         self.pressed_particle = None
         self.pressed_wall = False
 
-        self.new_particle = particle_lib.Particle(1, 0, 0, 0, 0, 0, vector_lib.Vector(0, 0))
+        self.new_particle = particle_lib.Particle(1, 0, 0, 0, 0, 0, pygame.Vector2(0, 0))
         self.focused_particle = None
 
         self.show_statistics = True
@@ -45,47 +45,47 @@ class Game:
     def physics(self):
         if self.simulating:
             for particle_no, particle in enumerate(self.particles):
-                particle.vel.add(physics_lib.gravity, physics_lib.delta_time)
+                particle.vel += physics_lib.gravity * physics_lib.delta_time
 
                 if self.walls:
                     if particle.pos.x >= self.wall_radius:
-                        particle.vel.add_(
+                        particle.vel += pygame.Vector2(
                             physics_lib.kw * physics_lib.delta_time * (-self.wall_radius + particle.pos.x), 0)
 
                     elif particle.pos.x <= - self.wall_radius:
-                        particle.vel.add_(physics_lib.kw * physics_lib.delta_time * (self.wall_radius + particle.pos.x),
-                                          0)
+                        particle.vel += pygame.Vector2(
+                            physics_lib.kw * physics_lib.delta_time * (self.wall_radius + particle.pos.x), 0)
 
                     if particle.pos.y >= self.wall_radius:
-                        particle.vel.add_(0, physics_lib.kw * physics_lib.delta_time * (
-                                -self.wall_radius + particle.pos.y))
+                        particle.vel += pygame.Vector2(
+                            0, physics_lib.kw * physics_lib.delta_time * (-self.wall_radius + particle.pos.y))
 
                     elif particle.pos.y <= - self.wall_radius:
-                        particle.vel.add_(0,
-                                          physics_lib.kw * physics_lib.delta_time * (self.wall_radius + particle.pos.y))
+                        particle.vel += pygame.Vector2(
+                            0, physics_lib.kw * physics_lib.delta_time * (self.wall_radius + particle.pos.y))
 
                 for other_particle in self.particles[:particle_no]:
                     delta = particle.pos - other_particle.pos
+                    distance_sqr = delta.magnitude_squared()
 
-                    if not delta.is_zero():
-                        distance_sqr = delta.magnitude_sqr
+                    if distance_sqr != 0:
                         distance = math.sqrt(distance_sqr)
 
-                        force_vector = delta.normalized * physics_lib.net_force(
+                        force_vector = delta.normalize() * physics_lib.net_force(
                             particle.muon_coefficient(other_particle),
                             distance, distance_sqr)
 
-                        particle.vel.add(force_vector, physics_lib.delta_time)
-                        other_particle.vel.add(-force_vector, physics_lib.delta_time)
+                        particle.vel += force_vector * physics_lib.delta_time
+                        other_particle.vel -= force_vector * physics_lib.delta_time
 
-                particle.pos.add(particle.vel, physics_lib.delta_time)
+                particle.pos += particle.vel * physics_lib.delta_time
 
     def draw(self):
         # Reset
         self.window.window.blit(self.camera.background, (0, 0))
 
         # Shadow
-        pygame.draw.circle(self.window.window, options_lib.colors["shadow"], self.screen_mouse_pos.tuple,
+        pygame.draw.circle(self.window.window, options_lib.colors["shadow"], self.screen_mouse_pos.xy,
                            int(options_lib.particle_radius * self.camera.zoom_amount))
 
         text_surface = options_lib.main_font.render(repr(self.new_particle), True,
@@ -108,25 +108,25 @@ class Game:
             if self.camera.is_visible_screen(screen_pos):
                 shown_particles += 1
                 if particle == self.focused_particle:
-                    pygame.draw.circle(self.window.window, options_lib.colors["focus"], screen_pos.tuple,
+                    pygame.draw.circle(self.window.window, options_lib.colors["focus"], screen_pos.xy,
                                        int(options_lib.particle_radius * 2 * self.camera.zoom_amount), 2)
 
-                pygame.draw.circle(self.window.window, particle.color, screen_pos.tuple,
+                pygame.draw.circle(self.window.window, particle.color, screen_pos.xy,
                                    int(options_lib.particle_radius * self.camera.zoom_amount))
 
                 if self.show_statistics:
-                    particle.rect.midbottom = self.camera.real_to_screen(particle.pos + vector_lib.Vector(0, -50)).tuple
+                    particle.rect.midbottom = self.camera.real_to_screen(particle.pos + pygame.Vector2(0, -50)).xy
                     self.window.window.blit(particle.surface, particle.rect)
 
         # Meter
         if self.focused_particle is not None:
             pygame.draw.line(self.window.window, options_lib.colors["meter"],
-                             self.camera.real_to_screen(self.focused_particle.pos).tuple, self.screen_mouse_pos.tuple,
+                             self.camera.real_to_screen(self.focused_particle.pos).xy, self.screen_mouse_pos.xy,
                              2)
 
             distance = (self.real_mouse_pos - self.focused_particle.pos) / physics_lib.rn
 
-            surface = options_lib.particles_font.render(f"{distance} ({int(distance.magnitude * 100) / 100}) Rn", True,
+            surface = options_lib.particles_font.render(f"{distance} ({int(distance.magnitude() * 100) / 100}) Rn", True,
                                                         options_lib.colors["meter"])
             rect = surface.get_rect()
             rect.midtop = self.screen_mouse_pos.x, self.screen_mouse_pos.y + 50
@@ -134,7 +134,7 @@ class Game:
 
             coefficient = self.focused_particle.muon_coefficient(self.new_particle)
             if coefficient > 0:
-                pygame.draw.circle(self.window.window, options_lib.colors["grid"], self.screen_middle.int_tuple,
+                pygame.draw.circle(self.window.window, options_lib.colors["grid"], self.screen_middle.xy,
                                    int(physics_lib.rn / coefficient * self.camera.zoom_amount), 1)
 
         # FPS
@@ -216,7 +216,7 @@ class Game:
                                                    random.randint(-1, 1),
                                                    0,
                                                    0,
-                                                   vector_lib.Vector(
+                                                   pygame.Vector2(
                                                        random.randint(-int(self.wall_radius), int(self.wall_radius)),
                                                        random.randint(-int(self.wall_radius), int(self.wall_radius)))))
 
@@ -237,13 +237,13 @@ class Game:
 
     def frame(self):
         if self.pressed_particle is not None:
-            self.pressed_particle.vel = vector_lib.Vector(0, 0)
+            self.pressed_particle.vel = pygame.Vector2(0, 0)
 
         if self.focused_particle is not None:
             self.camera.focus_on(self.focused_particle.pos)
 
-        self.screen_mouse_pos.set_tuple(pygame.mouse.get_pos())
-        self.real_mouse_pos.set(self.camera.screen_to_real(self.screen_mouse_pos))
+        self.screen_mouse_pos.xy = pygame.mouse.get_pos()
+        self.real_mouse_pos = self.camera.screen_to_real(self.screen_mouse_pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -258,7 +258,7 @@ class Game:
 
                 else:
                     for particle in self.particles:
-                        if (particle.pos - self.real_mouse_pos).magnitude_sqr <= \
+                        if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
                                 self.particle_radius_square and particle is not self.focused_particle:
                             break
 
@@ -278,7 +278,7 @@ class Game:
 
                         elif event.button == pygame.BUTTON_RIGHT:
                             particle_ = self.new_particle.copy()
-                            particle_.pos.set(self.real_mouse_pos)
+                            particle_.pos = self.real_mouse_pos.copy()
                             self.create_particle(particle_)
 
                         self.pressed_pos = self.real_mouse_pos
@@ -347,7 +347,7 @@ class Game:
 
                 elif event.key == pygame.K_f:
                     for particle in self.particles:
-                        particle.vel = vector_lib.Vector(0, 0)
+                        particle.vel = pygame.Vector2(0, 0)
 
                     self.reset_averaged()
 

@@ -1,4 +1,7 @@
-from libs import vector_lib
+from libs import particle_lib
+
+import pygame
+
 
 km = 1e6
 kt = 2e8
@@ -7,7 +10,7 @@ rn = kt / km
 cp = km / rn ** 2 / 6
 cf = km / rn ** 3
 
-gravity = vector_lib.Vector(0, 0)
+gravity = pygame.Vector2(0, 0)
 
 delta_time = 0.1
 
@@ -59,11 +62,11 @@ def calculate_kinetic_energy(particle):
     return particle.vel.magnitude_sqr / 2
 
 
-def calculate_kinetic_energy_revion(particle):
+def calculate_kinetic_energy_revion(particle: particle_lib.Particle):
     """
     Calculates kinetic energy in Revions.
     """
-    return particle.vel.magnitude_sqr / 2 / cp
+    return particle.vel.magnitude_squared() / 2 / cp
 
 
 def calculate_potential_energy_revion(particle, particle_no, particles):
@@ -77,7 +80,7 @@ def calculate_potential_energy_revion(particle, particle_no, particles):
     for other_particle in particles[:particle_no]:
         w = particle.muon_coefficient(other_particle)
         delta = other_particle.pos - particle.pos
-        x = delta.magnitude / rn
+        x = delta.magnitude() / rn
         summed += (2 - 3 * x * w) / x / x / x
 
     return summed

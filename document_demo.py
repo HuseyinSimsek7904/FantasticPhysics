@@ -20,7 +20,7 @@ document_viewer = document_lib.DocumentViewer((0, 0, 0), (255, 255, 255))
 
 file_name = "json_documentation/" + input("Section: ") + ".json"
 
-camera_pos = vector_lib.Vector(0, 0)
+camera_pos = pygame.Vector2(0, 0)
 size = 1
 
 main_surface = pygame.Surface((500, 500))
