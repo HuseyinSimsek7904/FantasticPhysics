@@ -8,12 +8,13 @@ This is a weird simulation/math project that contains some made up physics laws.
 
 # Contents:
 - ./main.py will run a simulation that simulates *Fantastic Physics* laws.
-- ./document_demo.py is just a demo that allows to read the documentation easier.
+- ./document_demo.py is a demo program that allows to read the documentation easier.
+- ./tiller_series_renderer_demo.py is a demo program that calculates tiller series to a certain depth.
+- ./options.json contains some visual settings. Change them with caution.
 - ./libs/ contains some modules that the simulation uses.
   - ./libs/physics_lib.py contains the constants and the calculation methods.
   - ./libs/game_lib.py can be used to initiate the simulation.
 
-- options.json contains some visual settings. Change them with caution.
 
 ---
 
@@ -27,5 +28,6 @@ This is a weird simulation/math project that contains some made up physics laws.
 - **Space** key will make the simulation run/stop.
 - **Mouse wheel** will make the camera zoom in/out.
 - **+ and -** keys will increase/decrease the simulation time step.
+- **R** key will delete all particles and create random particles. Number of particles is equal to the area.
 - If a particle is selected, **D** key will only delete that particle.
 - If no particles are selected, **D** key will delete all the particles.

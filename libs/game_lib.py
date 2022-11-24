@@ -211,7 +211,7 @@ class Game:
 
     def create_random_particle(self):
         self.create_particle(particle_lib.Particle(random.randint(-1, 1),
-                                                   0,
+                                                   random.randint(-1, 1),
                                                    0,
                                                    random.randint(-1, 1),
                                                    0,
@@ -308,6 +308,7 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.pressed_pos = None
                 self.pressed_particle = None
+                self.pressed_wall = False
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:

@@ -36,6 +36,8 @@
         ]
       },
       "(x and y are ru)"
-    ]
+    ],
+    "The movement of a particle can be approximated using Tiller series.",
+    "Tiller series can be used for 3 different parameters: distance, velocity, W."
   ]
 }
