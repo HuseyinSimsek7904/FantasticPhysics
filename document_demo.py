@@ -1,4 +1,4 @@
-from libs import document_lib, vector_lib
+from libs import document_lib
 import pygame
 
 pygame.init()
@@ -40,7 +40,7 @@ while True:
 
         elif event.type == pygame.MOUSEMOTION:
             if pygame.mouse.get_pressed()[0]:
-                camera_pos.add_(*event.rel, -1)
+                camera_pos += -pygame.Vector2(event.rel)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == pygame.BUTTON_WHEELUP:
@@ -52,5 +52,5 @@ while True:
                 surface = pygame.transform.rotozoom(main_surface, 0, size)
 
     window.fill((0, 0, 0))
-    window.blit(surface, (-camera_pos).int_tuple)
+    window.blit(surface, -camera_pos)
     pygame.display.update()
