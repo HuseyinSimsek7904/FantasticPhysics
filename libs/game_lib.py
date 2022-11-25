@@ -332,6 +332,9 @@ class Game:
                 elif event.key == pygame.K_z:
                     self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
 
+                elif event.key == pygame.K_F2:
+                    self.take_screenshot()
+
                 elif event.key == pygame.K_o:
                     self.clear_particles()
 
@@ -380,6 +383,20 @@ class Game:
         self.clock.tick(120)
 
         return False
+
+    def take_screenshot(self):
+        import os
+
+        file_no = 0
+
+        while True:
+            file_no += 1
+
+            path = f"screenshots/screenshot_{str(file_no).rjust(4, '0')}.png"
+
+            if not os.path.isfile(path):
+                pygame.image.save(self.window.window, path)
+                break
 
 
 # Visual constants
