@@ -41,7 +41,6 @@ game.loop()
 #   todo: add gravity chooser
 
 # todo: add in-game options menu
-#   todo: add option for changing the behavior of camera position when zoomed
 #   todo: add controls menu
 
 # todo: add in-game calculator

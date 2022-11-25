@@ -48,8 +48,17 @@ class Camera:
                abs(vector.y - self.pos.y) * self.zoom_amount < self.screen_middle.y + \
                options_lib.particle_radius * self.zoom_amount
 
-    def zoom(self, amount):
-        self.zoom_amount *= amount
+    def zoom(self, amount, on: pygame.Vector2 = None):
+        if on is not None:
+            old_real = (on - self.screen_middle) / self.zoom_amount + self.pos
+
+            self.zoom_amount *= amount
+
+            self.move(on - (old_real - self.pos) * self.zoom_amount - self.screen_middle)
+
+        else:
+            self.zoom_amount *= amount
+
         options_lib.update_font(self.zoom_amount)
 
         for particle in self.game.particles:

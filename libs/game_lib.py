@@ -224,7 +224,9 @@ class Game:
         self.reset_averaged()
 
     def zoom(self, amount):
-        self.camera.zoom(1.25 ** amount)
+        self.camera.zoom(1.25 ** amount,
+                         pygame.Vector2(pygame.mouse.get_pos())
+                         if options_lib.options["zoom position keep behaviour"] == "mouse" else None)
         self.update_scale()
 
     def update_particle_picker(self):
