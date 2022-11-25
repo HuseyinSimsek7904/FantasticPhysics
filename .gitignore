@@ -1,3 +1,5 @@
-setup/setup.bat
-setup.py
+/setup.py
 /screenshots/
+/.gitignore
+/fantasticPhysics.iml
+/.idea/
