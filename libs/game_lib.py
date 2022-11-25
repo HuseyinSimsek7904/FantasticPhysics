@@ -1,7 +1,10 @@
 from libs import options_lib, physics_lib, particle_lib, camera_lib, widgets_lib
+
 import pygame
 import math
 import random
+import json
+import os
 
 
 class Game:
@@ -231,161 +234,7 @@ class Game:
         self.topright_menu.update_text_at(1, f"x{self.camera.grid_zoom}")
         self.topright_menu.update_surface()
 
-    def frame(self):
-        if self.pressed_particle is not None:
-            self.pressed_particle.vel = pygame.Vector2(0, 0)
-
-        if self.focused_particle is not None:
-            self.camera.focus_on(self.focused_particle.pos)
-
-        self.screen_mouse_pos.xy = pygame.mouse.get_pos()
-        self.real_mouse_pos = self.camera.screen_to_real(self.screen_mouse_pos)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-
-            elif event.type == pygame.MOUSEWHEEL:
-                self.zoom(event.y)
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                for particle in self.particles:
-                    if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
-                            self.particle_radius_square and particle is not self.focused_particle:
-                        break
-
-                else:
-                    # Mouse is not on a particle
-                    if event.button == pygame.BUTTON_LEFT:
-                        self.pressed_wall = False
-
-                        if abs(self.real_mouse_pos.x) >= self.wall_radius and self.walls:
-                            self.pressed_wall = True
-
-                        elif abs(self.real_mouse_pos.y) >= self.wall_radius and self.walls:
-                            self.pressed_wall = True
-
-                        if self.focused_particle is not None:
-                            self.focused_particle = None
-
-                    elif event.button == pygame.BUTTON_RIGHT:
-                        particle_ = self.new_particle.copy()
-                        particle_.pos = self.real_mouse_pos.copy()
-                        self.create_particle(particle_)
-
-                    self.pressed_pos = self.real_mouse_pos
-
-                    continue
-
-                # Mouse is on a particle
-                if event.button == pygame.BUTTON_LEFT:
-                    self.pressed_particle = particle
-
-                elif event.button == pygame.BUTTON_RIGHT:
-                    self.focused_particle = particle
-
-            elif event.type == pygame.MOUSEMOTION:
-                if self.pressed_particle is None:
-                    if self.pressed_pos is not None:
-                        if self.pressed_wall:
-                            self.wall_radius = max(abs(self.real_mouse_pos.x), abs(self.real_mouse_pos.y))
-                            self.camera.get_background()
-
-                        else:
-                            self.camera.move(event.rel)
-
-                else:
-                    self.pressed_particle.pos = self.real_mouse_pos.copy()
-
-            elif event.type == pygame.MOUSEBUTTONUP:
-                self.pressed_pos = None
-                self.pressed_particle = None
-                self.pressed_wall = False
-
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    self.toggle_simulation()
-
-                elif event.key == pygame.K_a:
-                    self.new_particle.a = (self.new_particle.a + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_b:
-                    self.new_particle.b = (self.new_particle.b + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_c:
-                    self.new_particle.c = (self.new_particle.c + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_x:
-                    self.new_particle.x = (self.new_particle.x + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_y:
-                    self.new_particle.y = (self.new_particle.y + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_z:
-                    self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_F2:
-                    self.take_screenshot()
-
-                elif event.key == pygame.K_o:
-                    self.clear_particles()
-
-                elif event.key == pygame.K_d:
-                    if self.focused_particle is not None:
-                        self.remove_particle(self.focused_particle)
-
-                elif event.key == pygame.K_r:
-                    self.clear_particles()
-
-                    for i in range(int(4 * self.wall_radius * self.wall_radius / physics_lib.rn ** 2)):
-                        self.create_random_particle()
-
-                elif event.key == pygame.K_f:
-                    for particle in self.particles:
-                        particle.vel = pygame.Vector2(0, 0)
-
-                    self.reset_averaged()
-
-                elif event.key == pygame.K_TAB:
-                    self.new_particle.reverse()
-                    self.update_particle_picker()
-
-                elif event.key == pygame.K_s:
-                    self.simulating = True
-                    self.physics()
-                    self.simulating = False
-
-                elif event.key == pygame.K_t:
-                    self.topleft_menu.is_visible = not self.topleft_menu.is_visible
-
-                elif event.key == pygame.K_w:
-                    self.walls = not self.walls
-                    self.camera.get_background()
-
-                elif event.key == pygame.K_KP_PLUS:
-                    physics_lib.delta_time *= 1.5
-
-                elif event.key == pygame.K_KP_MINUS:
-                    physics_lib.delta_time *= 2 / 3
-
-                elif event.key == pygame.K_ESCAPE:
-                    return True
-
-        self.physics()
-        self.draw()
-        self.clock.tick(120)
-
-        return False
-
     def take_screenshot(self):
-        import os
-
         file_no = 0
 
         while True:
@@ -393,12 +242,208 @@ class Game:
 
             path = f"screenshots/screenshot_{str(file_no).rjust(4, '0')}.png"
 
-            if not os.path.isfile(path):
-                pygame.image.save(self.window.window_surface, path)
-                break
+            if os.path.isfile(path):
+                continue
+
+            pygame.image.save(self.window.window_surface, path)
+            return
+
+    def load_from_dict(self, data: dict):
+        self.particles = []
+
+        self.walls = data["walls"]["active"]
+        self.wall_radius = data["walls"]["radius"]
+
+        for particle in data["particles"]:
+            self.particles.append(particle_lib.get_particle_from_dict(particle))
+
+    def get_dict(self):
+        return {
+            "walls": {
+                "active": self.walls,
+                "radius": self.wall_radius
+            },
+            "particles": [particle.get_dict() for particle in self.particles]
+        }
+
+    def load_from_file(self, file_name):
+        with open(file_name) as file:
+            self.load_from_dict(json.load(file))
+
+    def save_to_file(self, file_name):
+        with open(file_name, "w") as file:
+            json.dump(self.get_dict(), file)
+
+    def quick_save(self):
+        file_no = 0
+
+        while True:
+            file_no += 1
+
+            path = f"saves/save_{str(file_no).rjust(4, '0')}.json"
+
+            if os.path.isfile(path):
+                continue
+
+            self.save_to_file(path)
+            return
+
+    def loop(self):
+        while True:
+            if self.pressed_particle is not None:
+                self.pressed_particle.vel = pygame.Vector2(0, 0)
+
+            if self.focused_particle is not None:
+                self.camera.focus_on(self.focused_particle.pos)
+
+            self.screen_mouse_pos.xy = pygame.mouse.get_pos()
+            self.real_mouse_pos = self.camera.screen_to_real(self.screen_mouse_pos)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+
+                elif event.type == pygame.MOUSEWHEEL:
+                    self.zoom(event.y)
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    for particle in self.particles:
+                        if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
+                                self.particle_radius_square and particle is not self.focused_particle:
+                            break
+
+                    else:
+                        # Mouse is not on a particle
+                        if event.button == pygame.BUTTON_LEFT:
+                            self.pressed_wall = False
+
+                            if abs(self.real_mouse_pos.x) >= self.wall_radius and self.walls:
+                                self.pressed_wall = True
+
+                            elif abs(self.real_mouse_pos.y) >= self.wall_radius and self.walls:
+                                self.pressed_wall = True
+
+                            if self.focused_particle is not None:
+                                self.focused_particle = None
+
+                        elif event.button == pygame.BUTTON_RIGHT:
+                            particle_ = self.new_particle.copy()
+                            particle_.pos = self.real_mouse_pos.copy()
+                            self.create_particle(particle_)
+
+                        self.pressed_pos = self.real_mouse_pos
+
+                        continue
+
+                    # Mouse is on a particle
+                    if event.button == pygame.BUTTON_LEFT:
+                        self.pressed_particle = particle
+
+                    elif event.button == pygame.BUTTON_RIGHT:
+                        self.focused_particle = particle
+
+                elif event.type == pygame.MOUSEMOTION:
+                    if self.pressed_particle is None:
+                        if self.pressed_pos is not None:
+                            if self.pressed_wall:
+                                self.wall_radius = max(abs(self.real_mouse_pos.x), abs(self.real_mouse_pos.y))
+                                self.camera.get_background()
+
+                            else:
+                                self.camera.move(event.rel)
+
+                    else:
+                        self.pressed_particle.pos = self.real_mouse_pos.copy()
+
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    self.pressed_pos = None
+                    self.pressed_particle = None
+                    self.pressed_wall = False
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.toggle_simulation()
+
+                    elif event.key == pygame.K_a:
+                        self.new_particle.a = (self.new_particle.a + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_b:
+                        self.new_particle.b = (self.new_particle.b + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_c:
+                        self.new_particle.c = (self.new_particle.c + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_x:
+                        self.new_particle.x = (self.new_particle.x + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_y:
+                        self.new_particle.y = (self.new_particle.y + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_z:
+                        self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_F2:
+                        self.take_screenshot()
+
+                    elif event.key == pygame.K_F3:
+                        self.quick_save()
+
+                    elif event.key == pygame.K_o:
+                        self.clear_particles()
+
+                    elif event.key == pygame.K_d:
+                        if self.focused_particle is not None:
+                            self.remove_particle(self.focused_particle)
+
+                    elif event.key == pygame.K_r:
+                        self.clear_particles()
+
+                        for i in range(int(4 * self.wall_radius * self.wall_radius / physics_lib.rn ** 2)):
+                            self.create_random_particle()
+
+                    elif event.key == pygame.K_f:
+                        for particle in self.particles:
+                            particle.vel = pygame.Vector2(0, 0)
+
+                        self.reset_averaged()
+
+                    elif event.key == pygame.K_TAB:
+                        self.new_particle.reverse()
+                        self.update_particle_picker()
+
+                    elif event.key == pygame.K_s:
+                        self.simulating = True
+                        self.physics()
+                        self.simulating = False
+
+                    elif event.key == pygame.K_t:
+                        self.topleft_menu.is_visible = not self.topleft_menu.is_visible
+
+                    elif event.key == pygame.K_w:
+                        self.walls = not self.walls
+                        self.camera.get_background()
+
+                    elif event.key == pygame.K_KP_PLUS:
+                        physics_lib.delta_time *= 1.5
+
+                    elif event.key == pygame.K_KP_MINUS:
+                        physics_lib.delta_time *= 2 / 3
+
+                    elif event.key == pygame.K_ESCAPE:
+                        return
+
+            self.physics()
+            self.draw()
+            self.clock.tick(120)
 
 
 # Visual constants
-ENERGY_ROUND = 1e4
+ENERGY_ROUND = 1e2
 FPS_ROUND = 1e2
 AVERAGING_COEFFICIENT = 1000

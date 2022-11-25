@@ -1,4 +1,4 @@
-from libs import options_lib, physics_lib
+from libs import options_lib
 
 import pygame
 
@@ -60,13 +60,47 @@ class Particle:
     def get_color(self):
         return self.a * 50 + self.z * 50 + 100, self.b * 50 + self.y * 50 + 100, self.c * 50 + self.x * 50 + 100
 
-    def update(self, vel_change):
-        self.vel += vel_change * physics_lib.delta_time
-
-        self.vel.x = self.vel.x
-        self.vel.y = self.vel.y
-
-        self.pos += self.vel * physics_lib.delta_time
-
     def copy(self):
         return Particle(self.a, self.b, self.c, self.x, self.y, self.z, self.pos.copy(), self.vel.copy())
+
+    def get_dict(self):
+        return {
+            "pos": tuple(self.pos),
+            "vel": tuple(self.vel),
+            "name": self.__repr__()
+        }
+
+
+def get_particle_from_dict(data: dict):
+    return get_particle_from_name(data["name"], pygame.Vector2(data["pos"]), pygame.Vector2(data["vel"]))
+
+
+def get_particle_from_name(name: str, position: pygame.Vector2 = pygame.Vector2(0, 0),
+                           velocity: pygame.Vector2 = pygame.Vector2(0, 0)) -> Particle:
+    particle = Particle(0, 0, 0, 0, 0, 0, position, velocity)
+
+    last = ""
+    for letter in name:
+        if letter in "abcxyz":
+            if last != "":
+                if particle.__getattribute__(last) != 0:
+                    raise ValueError("Invalid particle name.")
+
+                particle.__setattr__(last, 1)
+
+            last = letter
+
+        elif letter == "'":
+            if last == "" or particle.__getattribute__(last):
+                raise ValueError("Invalid particle name.")
+
+            particle.__setattr__(last, -1)
+            last = ""
+
+        else:
+            raise ValueError("Invalid particle name.")
+
+    if last:
+        particle.__setattr__(last, 1)
+
+    return particle

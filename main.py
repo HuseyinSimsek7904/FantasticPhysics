@@ -1,17 +1,26 @@
 from libs import game_lib
 
+import argparse
+import sys
+
+parser = argparse.ArgumentParser(
+    prog="FantasticPhysics",
+)
+parser.add_argument("-load")
+args = vars(parser.parse_args())
+
 game = game_lib.Game()
 
-while True:
-    if game.frame():
-        break
+if args["load"]:
+    game.load_from_file(args["load"])
+
+game.loop()
 
 # todo: change options_lib.py for better performance
 # todo: update trimers.json document using trimers.txt
 # todo: add extra quick mode
 # todo: add all formulas to physics_lib.py
 
-# todo: add simulation saving and loading
 # todo: add molecule constructor
 # todo: change some keys to buttons
 # todo: change labels in the game to widgets
