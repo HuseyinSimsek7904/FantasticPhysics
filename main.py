@@ -6,14 +6,10 @@ while True:
     if game.frame():
         break
 
-# todo: add screenshot
 # todo: change options_lib.py for better performance
 # todo: update trimers.json document using trimers.txt
 # todo: add extra quick mode
-
-# todo: remake physics_lib.py
-#   todo: add unit classes to physics_lib.py
-#   todo: add all formulas to physics_lib.py
+# todo: add all formulas to physics_lib.py
 
 # todo: add widget system
 #   todo: add simulation saving and loading
