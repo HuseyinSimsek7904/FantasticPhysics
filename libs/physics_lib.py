@@ -2,13 +2,15 @@ from libs import particle_lib
 
 import pygame
 
-
 km = 1e6
 kt = 2e8
 kw = -1e-1
+
 rn = kt / km
 cp = km / rn ** 2 / 6
 cf = km / rn ** 3
+
+symmetric_linear_trimer_stability_constant = 289 ** (1 / 3) - 8
 
 gravity = pygame.Vector2(0, 0)
 
@@ -61,6 +63,14 @@ def limit_distance_ru(w):
 
 def resting_potential(w):
     return - w * w * w
+
+
+def is_symmetric_trimer_stable(symmetric_bonds, outer_bond):
+    return outer_bond / symmetric_bonds > symmetric_linear_trimer_stability_constant
+
+
+def get_linearity_constant(bond1, bond2):
+    return bond1 * bond2 / (bond1 + bond2)
 
 
 def calculate_kinetic_energy(particle):

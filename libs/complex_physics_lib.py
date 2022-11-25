@@ -67,3 +67,11 @@ def get_perfect_distance(bond):
 
 def get_min_potential(bond):
     return Quantity("energy", physics_lib.resting_potential(bond))
+
+
+def get_linearity_constant(bond1, bond2):
+    return physics_lib.get_linearity_constant(bond1, bond2)
+
+
+def is_symmetric_trimer_stable(symmetric_bond, outer_bond):
+    return physics_lib.is_symmetric_trimer_stable(symmetric_bond, outer_bond)
