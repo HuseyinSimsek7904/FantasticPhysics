@@ -1,4 +1,4 @@
-from libs import options_lib, physics_lib, particle_lib, camera_lib, window_lib
+from libs import options_lib, physics_lib, particle_lib, camera_lib, widgets_lib
 import pygame
 import math
 import random
@@ -7,14 +7,33 @@ import random
 class Game:
     def __init__(self):
         self.screen_size: pygame.Vector2 = pygame.Vector2(*options_lib.screen_size)
-        self.window = window_lib.Window(self.screen_size)
+        self.window = widgets_lib.Window(self.screen_size)
+
+        self.topleft_menu = widgets_lib.TextListWidget(
+            pygame.Vector2(0, 0),
+            [],
+            options_lib.main_font,
+            (0, 0, 0),
+            pygame.Vector2(0, options_lib.main_font.get_height())
+        )
+
+        self.topright_menu = widgets_lib.TextListWidget(
+            self.window.window_surface.get_rect().topright,
+            ["", ""],
+            options_lib.main_font,
+            (0, 0, 0),
+            pygame.Vector2(0, options_lib.main_font.get_height()),
+            alignment="topright"
+        )
+
+        self.window.add_children(self.topleft_menu, self.topright_menu)
 
         self.particle_radius_square = options_lib.particle_radius ** 2
 
         self.real_mouse_pos = pygame.Vector2(0, 0)
         self.screen_mouse_pos = pygame.Vector2(0, 0)
 
-        self.screen_size = pygame.Vector2(*self.window.window.get_size())
+        self.screen_size = pygame.Vector2(*self.window.window_surface.get_size())
         self.screen_middle: pygame.Vector2 = self.screen_size / 2
 
         self.simulating = True
@@ -36,11 +55,14 @@ class Game:
         self.new_particle = particle_lib.Particle(1, 0, 0, 0, 0, 0, pygame.Vector2(0, 0))
         self.focused_particle = None
 
-        self.show_statistics = True
-
         self.clock = pygame.time.Clock()
 
         self.camera = camera_lib.Camera(self, self.screen_size, self.screen_middle)
+
+        self.update_scale()
+        self.update_particle_picker()
+
+        self.window.start()
 
     def physics(self):
         if self.simulating:
@@ -80,25 +102,20 @@ class Game:
 
                 particle.pos += particle.vel * physics_lib.delta_time
 
+            kinetic, potential = self.calculate_energy()
+
+            self.average_kinetic = (self.average_kinetic * (
+                    AVERAGING_COEFFICIENT - 1) + kinetic) / AVERAGING_COEFFICIENT
+            self.average_potential = (self.average_potential * (
+                    AVERAGING_COEFFICIENT - 1) + potential) / AVERAGING_COEFFICIENT
+
     def draw(self):
         # Reset
-        self.window.window.blit(self.camera.background, (0, 0))
+        self.window.window_surface.blit(self.camera.background, (0, 0))
 
         # Shadow
-        pygame.draw.circle(self.window.window, options_lib.colors["shadow"], self.screen_mouse_pos.xy,
+        pygame.draw.circle(self.window.window_surface, options_lib.colors["shadow"], self.screen_mouse_pos.xy,
                            int(options_lib.particle_radius * self.camera.zoom_amount))
-
-        text_surface = options_lib.main_font.render(repr(self.new_particle), True,
-                                                    options_lib.colors["meter"])
-        text_rect = text_surface.get_rect()
-        text_rect.topright = self.screen_size.x, 0
-        self.window.window.blit(text_surface, text_rect)
-
-        text_surface = options_lib.main_font.render(f"x{1 / self.camera.grid_zoom}", True,
-                                                    options_lib.colors["meter"])
-        text_rect = text_surface.get_rect()
-        text_rect.topright = self.screen_size.x, 20
-        self.window.window.blit(text_surface, text_rect)
 
         # Particles
         shown_particles = 0
@@ -108,86 +125,53 @@ class Game:
             if self.camera.is_visible_screen(screen_pos):
                 shown_particles += 1
                 if particle == self.focused_particle:
-                    pygame.draw.circle(self.window.window, options_lib.colors["focus"], screen_pos.xy,
+                    pygame.draw.circle(self.window.window_surface, options_lib.colors["focus"], screen_pos.xy,
                                        int(options_lib.particle_radius * 2 * self.camera.zoom_amount), 2)
 
-                pygame.draw.circle(self.window.window, particle.color, screen_pos.xy,
+                pygame.draw.circle(self.window.window_surface, particle.color, screen_pos.xy,
                                    int(options_lib.particle_radius * self.camera.zoom_amount))
 
-                if self.show_statistics:
+                if self.topleft_menu.is_visible:
                     particle.rect.midbottom = self.camera.real_to_screen(particle.pos + pygame.Vector2(0, -50)).xy
-                    self.window.window.blit(particle.surface, particle.rect)
+                    self.window.window_surface.blit(particle.surface, particle.rect)
 
         # Meter
         if self.focused_particle is not None:
-            pygame.draw.line(self.window.window, options_lib.colors["meter"],
-                             self.camera.real_to_screen(self.focused_particle.pos).xy, self.screen_mouse_pos.xy,
-                             2)
-
             distance = (self.real_mouse_pos - self.focused_particle.pos) / physics_lib.rn
 
-            surface = options_lib.particles_font.render(f"{distance} ({int(distance.magnitude() * 100) / 100}) Rn", True,
-                                                        options_lib.colors["meter"])
+            surface = options_lib.particles_font.render(f"{distance} ({int(distance.magnitude() * 100) / 100}) Rn",
+                                                        True, options_lib.colors["meter"])
             rect = surface.get_rect()
             rect.midtop = self.screen_mouse_pos.x, self.screen_mouse_pos.y + 50
-            self.window.window.blit(surface, rect)
+            self.window.window_surface.blit(surface, rect)
 
             coefficient = self.focused_particle.muon_coefficient(self.new_particle)
-            if coefficient > 0:
-                pygame.draw.circle(self.window.window, options_lib.colors["grid"], self.screen_middle.xy,
-                                   int(physics_lib.rn / coefficient * self.camera.zoom_amount), 1)
 
-        # FPS
-        if self.show_statistics:
-            surface = options_lib.main_font.render(f"FPS: {int(self.clock.get_fps() * FPS_ROUND) / FPS_ROUND}", True,
-                                                   options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 0))
+            if physics_lib.is_stable(coefficient):
+                perfect_distance = physics_lib.perfect_distance_pixel(coefficient)
 
-            surface = options_lib.main_font.render(f"Particles: {len(self.particles)} ({shown_particles} shown)", True,
-                                                   options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 20))
+                pygame.draw.circle(self.window.window_surface, options_lib.colors["grid"], self.screen_middle.xy,
+                                   int(perfect_distance * self.camera.zoom_amount), 1)
 
-            kinetic, potential = self.calculate_energy()
+        kinetic, potential = self.calculate_energy()
 
-            if self.simulating:
-                self.average_kinetic = (self.average_kinetic * (
-                        AVERAGING_COEFFICIENT - 1) + kinetic) / AVERAGING_COEFFICIENT
-                self.average_potential = (self.average_potential * (
-                        AVERAGING_COEFFICIENT - 1) + potential) / AVERAGING_COEFFICIENT
+        # Topleft menu
+        self.topleft_menu.set_texts(
+            f"FPS: {int(self.clock.get_fps() * FPS_ROUND) / FPS_ROUND}",
+            f"Particles: {len(self.particles)} ({shown_particles} shown)",
+            f"Kinetic: {int(kinetic * ENERGY_ROUND) / ENERGY_ROUND}",
+            f""
+            f"Temperature: {0 if not len(self.particles) else int(kinetic / len(self.particles) * ENERGY_ROUND) / ENERGY_ROUND}",
+            f"Potential: {int(potential * ENERGY_ROUND) / ENERGY_ROUND}",
+            f"Total: {int((potential + kinetic) * ENERGY_ROUND) / ENERGY_ROUND}",
+            f"Average Kinetic: {int(self.average_kinetic * ENERGY_ROUND) / ENERGY_ROUND}",
+            f"Average Temperature: {0 if not len(self.particles) else int(self.average_kinetic / len(self.particles) * ENERGY_ROUND) / ENERGY_ROUND}",
+            f"Average Potential: {int(self.average_potential * ENERGY_ROUND) / ENERGY_ROUND}"
+        )
+        self.topleft_menu.update_surface()
 
-            surface = options_lib.main_font.render(f"Kinetic: {int(kinetic * ENERGY_ROUND) / ENERGY_ROUND}", True,
-                                                   options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 70))
-
-            surface = options_lib.main_font.render(
-                f"Temperature: {0 if not len(self.particles) else int(kinetic / len(self.particles) * ENERGY_ROUND) / ENERGY_ROUND}",
-                True, options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 90))
-
-            surface = options_lib.main_font.render(f"Potential: {int(potential * ENERGY_ROUND) / ENERGY_ROUND}", True,
-                                                   options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 110))
-
-            surface = options_lib.main_font.render(f"Total: {int((potential + kinetic) * ENERGY_ROUND) / ENERGY_ROUND}",
-                                                   True, options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 130))
-
-            surface = options_lib.main_font.render(
-                f"Average Kinetic: {int(self.average_kinetic * ENERGY_ROUND) / ENERGY_ROUND}", True,
-                options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 150))
-
-            surface = options_lib.main_font.render(
-                f"Average Temperature: {0 if not len(self.particles) else int(self.average_kinetic / len(self.particles) * ENERGY_ROUND) / ENERGY_ROUND}",
-                True, options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 170))
-
-            surface = options_lib.main_font.render(
-                f"Average Potential: {int(self.average_potential * ENERGY_ROUND) / ENERGY_ROUND}", True,
-                options_lib.colors["meter"])
-            self.window.window.blit(surface, (0, 190))
-
-        pygame.display.update()
+        self.window.update_surface()
+        self.window.render()
 
     def calculate_energy(self):
         kinetic = 0
@@ -235,6 +219,18 @@ class Game:
         self.focused_particle = None
         self.reset_averaged()
 
+    def zoom(self, amount):
+        self.camera.zoom(1.25 ** amount)
+        self.update_scale()
+
+    def update_particle_picker(self):
+        self.topright_menu.update_text_at(0, f"{self.new_particle}")
+        self.topright_menu.update_surface()
+
+    def update_scale(self):
+        self.topright_menu.update_text_at(1, f"x{self.camera.grid_zoom}")
+        self.topright_menu.update_surface()
+
     def frame(self):
         if self.pressed_particle is not None:
             self.pressed_particle.vel = pygame.Vector2(0, 0)
@@ -249,48 +245,44 @@ class Game:
             if event.type == pygame.QUIT:
                 return
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == pygame.BUTTON_WHEELUP:
-                    self.camera.zoom(1.25)
+            elif event.type == pygame.MOUSEWHEEL:
+                self.zoom(event.y)
 
-                elif event.button == pygame.BUTTON_WHEELDOWN:
-                    self.camera.zoom(0.8)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for particle in self.particles:
+                    if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
+                            self.particle_radius_square and particle is not self.focused_particle:
+                        break
 
                 else:
-                    for particle in self.particles:
-                        if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
-                                self.particle_radius_square and particle is not self.focused_particle:
-                            break
-
-                    else:
-                        # Mouse is not on a particle
-                        if event.button == pygame.BUTTON_LEFT:
-                            self.pressed_wall = False
-
-                            if abs(self.real_mouse_pos.x) >= self.wall_radius and self.walls:
-                                self.pressed_wall = True
-
-                            elif abs(self.real_mouse_pos.y) >= self.wall_radius and self.walls:
-                                self.pressed_wall = True
-
-                            if self.focused_particle is not None:
-                                self.focused_particle = None
-
-                        elif event.button == pygame.BUTTON_RIGHT:
-                            particle_ = self.new_particle.copy()
-                            particle_.pos = self.real_mouse_pos.copy()
-                            self.create_particle(particle_)
-
-                        self.pressed_pos = self.real_mouse_pos
-
-                        continue
-
-                    # Mouse is on a particle
+                    # Mouse is not on a particle
                     if event.button == pygame.BUTTON_LEFT:
-                        self.pressed_particle = particle
+                        self.pressed_wall = False
+
+                        if abs(self.real_mouse_pos.x) >= self.wall_radius and self.walls:
+                            self.pressed_wall = True
+
+                        elif abs(self.real_mouse_pos.y) >= self.wall_radius and self.walls:
+                            self.pressed_wall = True
+
+                        if self.focused_particle is not None:
+                            self.focused_particle = None
 
                     elif event.button == pygame.BUTTON_RIGHT:
-                        self.focused_particle = particle
+                        particle_ = self.new_particle.copy()
+                        particle_.pos = self.real_mouse_pos.copy()
+                        self.create_particle(particle_)
+
+                    self.pressed_pos = self.real_mouse_pos
+
+                    continue
+
+                # Mouse is on a particle
+                if event.button == pygame.BUTTON_LEFT:
+                    self.pressed_particle = particle
+
+                elif event.button == pygame.BUTTON_RIGHT:
+                    self.focused_particle = particle
 
             elif event.type == pygame.MOUSEMOTION:
                 if self.pressed_particle is None:
@@ -316,21 +308,27 @@ class Game:
 
                 elif event.key == pygame.K_a:
                     self.new_particle.a = (self.new_particle.a + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_b:
                     self.new_particle.b = (self.new_particle.b + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_c:
                     self.new_particle.c = (self.new_particle.c + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_x:
                     self.new_particle.x = (self.new_particle.x + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_y:
                     self.new_particle.y = (self.new_particle.y + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_z:
                     self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_F2:
                     self.take_screenshot()
@@ -356,6 +354,7 @@ class Game:
 
                 elif event.key == pygame.K_TAB:
                     self.new_particle.reverse()
+                    self.update_particle_picker()
 
                 elif event.key == pygame.K_s:
                     self.simulating = True
@@ -363,7 +362,7 @@ class Game:
                     self.simulating = False
 
                 elif event.key == pygame.K_t:
-                    self.show_statistics = not self.show_statistics
+                    self.topleft_menu.is_visible = not self.topleft_menu.is_visible
 
                 elif event.key == pygame.K_w:
                     self.walls = not self.walls
@@ -395,7 +394,7 @@ class Game:
             path = f"screenshots/screenshot_{str(file_no).rjust(4, '0')}.png"
 
             if not os.path.isfile(path):
-                pygame.image.save(self.window.window, path)
+                pygame.image.save(self.window.window_surface, path)
                 break
 
 

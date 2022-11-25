@@ -39,6 +39,10 @@ def revion_to_tsei(x):
     return x * cp
 
 
+def is_stable(w):
+    return w > 0
+
+
 def perfect_distance_pixel(w):
     return rn / w
 
@@ -48,7 +52,7 @@ def perfect_distance_ru(w):
 
 
 def limit_distance_pixel(w):
-    return 2 / 3 / w
+    return rn * 2 / 3 / w
 
 
 def limit_distance_ru(w):
