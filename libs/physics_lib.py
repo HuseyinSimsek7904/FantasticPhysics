@@ -55,6 +55,10 @@ def limit_distance_ru(w):
     return 2 * rn / 3 / w
 
 
+def resting_potential(w):
+    return - w * w * w
+
+
 def calculate_kinetic_energy(particle):
     """
     Calculates kinetic energy in Revions.
@@ -74,7 +78,7 @@ def calculate_potential_energy_revion(particle, particle_no, particles):
     Calculates the potential energy in Revions.
     """
 
-    # fixme: that is wrong
+    # FIXME
     summed = - tsei_to_revion(particle.pos.y * gravity.y + particle.pos.x * gravity.x)
 
     for other_particle in particles[:particle_no]:
