@@ -16,17 +16,18 @@ class Game:
             pygame.Vector2(0, 0),
             [],
             options_lib.main_font,
-            (0, 0, 0),
-            pygame.Vector2(0, options_lib.main_font.get_height())
+            pygame.Vector2(0, options_lib.main_font.get_height()),
+            (0, 0, 0)
         )
 
         self.topright_menu = widgets_lib.TextListWidget(
-            self.window.window_surface.get_rect().topright,
+            pygame.Vector2(0, 0),
             ["", ""],
             options_lib.main_font,
-            (0, 0, 0),
             pygame.Vector2(0, options_lib.main_font.get_height()),
-            alignment="topright"
+            (0, 0, 0),
+            alignment="topright",
+            master_alignment="topright"
         )
 
         self.window.add_children(self.topleft_menu, self.topright_menu)
@@ -134,7 +135,7 @@ class Game:
                 pygame.draw.circle(self.window.window_surface, particle.color, screen_pos.xy,
                                    int(options_lib.particle_radius * self.camera.zoom_amount))
 
-                if self.topleft_menu.is_visible:
+                if self.topleft_menu.visible:
                     particle.rect.midbottom = self.camera.real_to_screen(particle.pos + pygame.Vector2(0, -50)).xy
                     self.window.window_surface.blit(particle.surface, particle.rect)
 
@@ -227,11 +228,11 @@ class Game:
         self.update_scale()
 
     def update_particle_picker(self):
-        self.topright_menu.update_text_at(0, f"{self.new_particle}")
+        self.topright_menu[0] = f"{self.new_particle}"
         self.topright_menu.update_surface()
 
     def update_scale(self):
-        self.topright_menu.update_text_at(1, f"x{self.camera.grid_zoom}")
+        self.topright_menu[1] = f"x{self.camera.grid_zoom}"
         self.topright_menu.update_surface()
 
     def take_screenshot(self):

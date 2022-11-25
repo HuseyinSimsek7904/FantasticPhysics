@@ -3,12 +3,31 @@ import pygame
 
 
 class Widget:
-    is_visible = True
-    master = None
-    surface: None | pygame.Surface = None
+    """
+    Base widget class. Add super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to
+    __init__ when inheriting from this class.
+    """
 
-    def __init__(self):
-        self.surface = pygame.surface.Surface((0, 0), pygame.SRCALPHA)
+    visible = True
+    master = None
+
+    surface: None | pygame.Surface = None
+    rect: None | pygame.Rect = None
+
+    alignment: str = "topleft"
+    master_alignment: str = "topleft"
+    shift: pygame.Vector2 = None
+
+    def __init__(self, shift: pygame.Vector2 = pygame.Vector2(0, 0),
+                 alignment: str = "topleft",
+                 master_alignment: str = "topleft"):
+        self.shift = shift
+        self.alignment = alignment
+        self.master_alignment = master_alignment
+
+    def set_surface(self, surface):
+        self.surface = surface
+        self.rect = self.surface.get_rect()
 
     def start(self):
         pass
@@ -16,8 +35,14 @@ class Widget:
     def update_surface(self):
         pass
 
-    def ask_for_draw(self, surface):
-        pass
+    def ask_for_draw(self, surface: pygame.Surface):
+        if not self.visible:
+            return
+
+        surface.blit(self.surface, self.rect)
+
+    def ask_for_event(self, event: pygame.event.Event):
+        return False
 
     def clear_surface(self):
         self.fill_surface((0, 0, 0, 0))
@@ -25,17 +50,23 @@ class Widget:
     def fill_surface(self, color: tuple[int, int, int, int] | tuple[int, int, int]):
         self.surface.fill(color)
 
-
-class LeafWidget(Widget):
-    def __init__(self):
-        super().__init__()
+    def update_rect(self):
+        setattr(self.rect, self.alignment,
+                pygame.Vector2(getattr(self.master.rect, self.master_alignment)) + self.shift)
 
 
 class ListWidget(Widget):
+    """
+    Widget class with children. Add
+    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment, *args) to __init__ when
+    inheriting from this class.
+    """
     children: list[Widget] = None
 
-    def __init__(self, *args):
-        super().__init__()
+    def __init__(self, shift: pygame.Vector2 = pygame.Vector2(0, 0),
+                 alignment: str = "topleft",
+                 master_alignment: str = "topleft", *args):
+        super().__init__(shift, alignment, master_alignment)
 
         self.children = []
         self.set_children(*args)
@@ -80,8 +111,19 @@ class ListWidget(Widget):
         for child in self:
             child.ask_for_draw(self.surface)
 
+    def ask_for_event(self, event):
+        for child in self:
+            if child.ask_for_event(event):
+                return True
+
+        return False
+
 
 class Window(ListWidget):
+    """
+    Window class. Add super().__init__(screen_size=screen_size, *args) to __init__ when inheriting from this class.
+    """
+
     def __init__(self, screen_size, *args):
         super().__init__(*args)
 
@@ -89,7 +131,10 @@ class Window(ListWidget):
         self.window_surface = pygame.display.set_mode(tuple(self.screen_size),
                                                       flags=pygame.FULLSCREEN if options_lib.fullscreen else 0)
 
-        self.surface = pygame.surface.Surface(self.window_surface.get_size(), pygame.SRCALPHA)
+        self.set_surface(pygame.surface.Surface(self.window_surface.get_size(), pygame.SRCALPHA))
+
+    def event_handler(self, event):
+        pass
 
     def update_surface(self):
         self.clear_surface()
@@ -102,13 +147,34 @@ class Window(ListWidget):
 
         pygame.display.update()
 
+    def get_events(self):
+        events = pygame.event.get()
 
-class TextWidget(LeafWidget):
-    def __init__(self, pos: pygame.Vector2, text: bytes | str, font: pygame.font.Font, color: str | tuple,
+        for event in events:
+            for child in self:
+                if child.ask_for_event(event):
+                    break
+
+            else:
+                self.event_handler(event)
+
+
+class TextWidget(Widget):
+    """
+    Text object with one string. Add
+    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
+    inheriting from this class.
+    """
+
+    def __init__(self,
+                 shift: pygame.Vector2,
+                 text: bytes | str, font: pygame.font.Font,
+                 color: str | tuple,
+                 alignment: str = "topleft",
+                 master_alignment: str = "topleft",
                  background_color: str | tuple = None):
-        super().__init__()
+        super().__init__(shift, alignment, master_alignment)
 
-        self.pos = pos
         self.text = text
         self.font = font
         self.color = color
@@ -118,43 +184,50 @@ class TextWidget(LeafWidget):
         self.update_surface()
 
     def update_surface(self):
-        if not self.is_visible:
+        if not self.visible:
             return
 
-        self.surface = self.font.render(self.text, True, self.color, self.background)
-
-        super().update_surface()
-
-    def ask_for_draw(self, surface):
-        if not self.is_visible:
-            return
-
-        surface.blit(self.surface, self.pos)
+        self.set_surface(self.font.render(self.text, True, self.color, self.background))
+        self.update_rect()
 
 
-class TextListWidget(LeafWidget):
+class TextListWidget(Widget):
+    """
+    Text class with more than one strings. Add
+    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
+    inheriting from this class.
+    """
     surfaces: list[tuple[str, pygame.Surface, pygame.Rect]] = None
 
-    def __init__(self, pos: pygame.Vector2, text: list, font: pygame.font.Font, color: str | tuple,
-                 line_dif: pygame.Vector2, background_color: tuple | None = None, alignment="topleft"):
-        super().__init__()
+    def __init__(self,
+                 shift: pygame.Vector2,
+                 text: list,
+                 font: pygame.font.Font,
+                 line_dif: pygame.Vector2,
+                 color: str | tuple,
+                 background_color: tuple | None = None,
+                 alignment="topleft",
+                 master_alignment="topleft"):
 
-        self.pos = pos
+        super().__init__(shift, alignment, master_alignment)
+
         self.font = font
         self.color = color
         self.background = background_color
-        self.alignment = alignment
 
         self.line_dif = line_dif
 
         self.set_texts(*text)
 
-    def update_text_at(self, line_no, new_text):
-        surface = self.font.render(new_text, True, self.color, self.background)
+    def __setitem__(self, key, value):
+        surface = self.font.render(value, True, self.color, self.background)
         rect = surface.get_rect()
-        setattr(rect, self.alignment, line_no * self.line_dif)
+        setattr(rect, self.alignment, key * self.line_dif)
 
-        self.surfaces[line_no] = new_text, surface, rect
+        self.surfaces[key] = value, surface, rect
+
+    def __getitem__(self, item):
+        return self.surfaces[item]
 
     def set_texts(self, *text):
         self.surfaces = []
@@ -187,18 +260,55 @@ class TextListWidget(LeafWidget):
         self.update_surface()
 
     def update_surface(self):
-        if not self.is_visible:
+        if not self.visible:
             return
 
-        self.surface = pygame.Surface(self.get_rect().size, pygame.SRCALPHA)
+        self.set_surface(pygame.Surface(self.get_rect().size, pygame.SRCALPHA))
+        self.update_rect()
 
         for _, surface, rect in self.surfaces:
             self.surface.blit(surface, pygame.Vector2(rect.topleft) - pygame.Vector2(self.get_rect().topleft))
 
-    def ask_for_draw(self, surface):
-        if not self.is_visible:
-            return
 
-        rect = self.surface.get_rect()
-        setattr(rect, self.alignment, self.pos)
-        surface.blit(self.surface, rect)
+class Button(ListWidget):
+    """
+    List widget with mouse click detection. Add
+    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment, *args) to __init__ when
+    inheriting from this class.
+    """
+
+    def __init__(self,
+                 shift: pygame.Vector2,
+                 rect: pygame.Rect,
+                 down_buttons: tuple = (),
+                 up_buttons: tuple = (), *args,
+                 alignment: str = "topleft",
+                 master_alignment: str = "topleft"
+                 ):
+        super(Button, self).__init__(shift, alignment, master_alignment, *args)
+
+        self.down_buttons = down_buttons
+        self.up_buttons = up_buttons
+        self.rect = rect
+
+    def button_down_event(self, event):
+        pass
+
+    def button_up_event(self, event):
+        pass
+
+    @property
+    def is_mouse_on(self):
+        return self.rect.collidepoint(pygame.mouse.get_pos())
+
+    def ask_for_event(self, event):
+        if not self.is_mouse_on:
+            return False
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button in self.down_buttons:
+            self.button_down_event(event)
+
+        elif event.type == pygame.MOUSEBUTTONUP and event.button in self.up_buttons:
+            self.button_up_event(event)
+
+        return True
