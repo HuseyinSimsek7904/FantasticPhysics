@@ -1,7 +1,6 @@
 from libs import game_lib
 
 import argparse
-import sys
 
 parser = argparse.ArgumentParser(
     prog="FantasticPhysics",

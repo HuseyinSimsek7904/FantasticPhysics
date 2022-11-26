@@ -23,5 +23,5 @@
   "particles font size": 20,
   "main font size": 25,
   "document font size": 20,
-  "zoom position keep behaviour": "mouse"
+  "zoom position keep behaviour": 2
 }

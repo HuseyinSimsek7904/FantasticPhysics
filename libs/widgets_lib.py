@@ -13,12 +13,14 @@ class Widget:
 
     surface: None | pygame.Surface = None
     rect: None | pygame.Rect = None
+    full_rect: None | pygame.Rect = None
 
     alignment: str = "topleft"
     master_alignment: str = "topleft"
     shift: pygame.Vector2 = None
 
-    def __init__(self, shift: pygame.Vector2 = pygame.Vector2(0, 0),
+    def __init__(self,
+                 shift: pygame.Vector2 = pygame.Vector2(0, 0),
                  alignment: str = "topleft",
                  master_alignment: str = "topleft"):
         self.shift = shift
@@ -28,16 +30,27 @@ class Widget:
     def set_surface(self, surface):
         self.surface = surface
         self.rect = self.surface.get_rect()
+        self.full_rect = self.surface.get_rect()
 
     def start(self):
-        pass
+        self.update_surface()
 
     def update_surface(self):
         pass
 
+    def get_top(self):
+        if self.master is None:
+            return self
+
+        else:
+            return self.master
+
     def ask_for_draw(self, surface: pygame.Surface):
         if not self.visible:
             return
+
+        if self.surface is None:
+            self.update_surface()
 
         surface.blit(self.surface, self.rect)
 
@@ -51,32 +64,36 @@ class Widget:
         self.surface.fill(color)
 
     def update_rect(self):
-        setattr(self.rect, self.alignment,
-                pygame.Vector2(getattr(self.master.rect, self.master_alignment)) + self.shift)
+        setattr(self.rect, self.alignment, pygame.Vector2(
+            getattr(self.master.rect, self.master_alignment)) - self.master.rect.topleft + self.shift)
+        self.full_rect = pygame.Rect(pygame.Vector2(self.rect.topleft) + pygame.Vector2(self.master.full_rect.topleft),
+                                     self.rect.size)
 
 
 class ListWidget(Widget):
     """
     Widget class with children. Add
-    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment, *args) to __init__ when
+    super().__init__(*args, shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
     inheriting from this class.
     """
     children: list[Widget] = None
 
-    def __init__(self, shift: pygame.Vector2 = pygame.Vector2(0, 0),
+    def __init__(self,
+                 *args,
+                 shift: pygame.Vector2 = pygame.Vector2(0, 0),
                  alignment: str = "topleft",
-                 master_alignment: str = "topleft", *args):
-        super().__init__(shift, alignment, master_alignment)
+                 master_alignment: str = "topleft"):
+        super().__init__(
+            shift,
+            alignment,
+            master_alignment
+        )
 
         self.children = []
         self.set_children(*args)
 
     def __iter__(self):
         return iter(self.children)
-
-    def start(self):
-        for child in self:
-            child.start()
 
     def set_children(self, *children: Widget):
         self.kill_children()
@@ -121,12 +138,17 @@ class ListWidget(Widget):
 
 class Window(ListWidget):
     """
-    Window class. Add super().__init__(screen_size=screen_size, *args) to __init__ when inheriting from this class.
+    Window class. Add super().__init__(*args, screen_size=screen_size) to __init__ when inheriting from this class.
     """
 
-    def __init__(self, screen_size, *args):
-        super().__init__(*args)
+    def __init__(self,
+                 *args,
+                 screen_size):
+        super().__init__(
+            *args
+        )
 
+        self.focused = None
         self.screen_size = screen_size
         self.window_surface = pygame.display.set_mode(tuple(self.screen_size),
                                                       flags=pygame.FULLSCREEN if options_lib.fullscreen else 0)
@@ -173,7 +195,10 @@ class TextWidget(Widget):
                  alignment: str = "topleft",
                  master_alignment: str = "topleft",
                  background_color: str | tuple = None):
-        super().__init__(shift, alignment, master_alignment)
+        super().__init__(
+            shift,
+            alignment,
+            master_alignment)
 
         self.text = text
         self.font = font
@@ -209,7 +234,10 @@ class TextListWidget(Widget):
                  alignment="topleft",
                  master_alignment="topleft"):
 
-        super().__init__(shift, alignment, master_alignment)
+        super().__init__(
+            shift,
+            alignment,
+            master_alignment)
 
         self.font = font
         self.color = color
@@ -273,42 +301,80 @@ class TextListWidget(Widget):
 class Button(ListWidget):
     """
     List widget with mouse click detection. Add
-    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment, *args) to __init__ when
-    inheriting from this class.
+    super().__init__(
+                *args,
+                shift=shift,
+                size=size,
+                color=color,
+                alignment=alignment,
+                master_alignment=master_alignment
+                button_down_event = button_down_event
+                button_up_event = button_up_event
+                motion_event = motion_event
+        )
+    to __init__ when inheriting from this class.
     """
 
     def __init__(self,
+                 *args,
                  shift: pygame.Vector2,
-                 rect: pygame.Rect,
-                 down_buttons: tuple = (),
-                 up_buttons: tuple = (), *args,
+                 size: pygame.Vector2,
+                 color: tuple = (0, 0, 0, 0),
                  alignment: str = "topleft",
-                 master_alignment: str = "topleft"
+                 master_alignment: str = "topleft",
+                 button_down_event=lambda x: (),
+                 button_up_event=lambda x: (),
+                 motion_event=lambda x: (),
                  ):
-        super(Button, self).__init__(shift, alignment, master_alignment, *args)
+        super(Button, self).__init__(
+            *args,
+            shift=shift,
+            alignment=alignment,
+            master_alignment=master_alignment
+        )
 
-        self.down_buttons = down_buttons
-        self.up_buttons = up_buttons
-        self.rect = rect
+        self.size = size
+        self.color = color
 
-    def button_down_event(self, event):
-        pass
+        self.button_down_event = button_down_event
+        self.button_up_event = button_up_event
+        self.motion_event = motion_event
 
-    def button_up_event(self, event):
-        pass
+    def update_surface(self):
+        self.set_surface(pygame.Surface(self.size, pygame.SRCALPHA))
+        self.update_rect()
+        self.fill_surface(self.color)
+
+        for child in self:
+            child.ask_for_draw(self.surface)
+
+    def update_rect(self):
+        super(Button, self).update_rect()
 
     @property
     def is_mouse_on(self):
-        return self.rect.collidepoint(pygame.mouse.get_pos())
+        return self.full_rect.collidepoint(pygame.mouse.get_pos())
+
+    @property
+    def local_mouse_position(self):
+        return pygame.Vector2(pygame.mouse.get_pos()) - pygame.Vector2(self.full_rect.topleft)
 
     def ask_for_event(self, event):
-        if not self.is_mouse_on:
+        if not (self.visible and self.is_mouse_on):
             return False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button in self.down_buttons:
-            self.button_down_event(event)
+        for child in self:
+            if child.ask_for_event(event):
+                return True
 
-        elif event.type == pygame.MOUSEBUTTONUP and event.button in self.up_buttons:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.button_down_event(event)
+            self.get_top().focused = self
+
+        elif event.type == pygame.MOUSEBUTTONUP:
             self.button_up_event(event)
+
+        elif event.type == pygame.MOUSEMOTION:
+            self.motion_event(event)
 
         return True
