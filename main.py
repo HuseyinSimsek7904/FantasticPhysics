@@ -15,22 +15,21 @@ if args["load"]:
 
 game.loop()
 
+# MOST IMPORTANT
+# todo: organize functions like remove_all, remove_focused, ec.
+# todo: add CTRL-A to select all
+# todo: add molecule saving
+# todo: rebuild widget system
+
 # todo: change options_lib.py for better performance
 # todo: update trimers.json document using trimers.txt
 # todo: add extra quick mode
 # todo: add all formulas to physics_lib.py
 
 # todo: add molecule constructor
-# todo: change some keys to buttons
-# todo: change labels in the game to widgets
 # todo: add documentation to game
 # todo: add more details to energy meter
 # todo: add pressure calculation
-# todo: add selecting more than one particle
-
-# todo: add selection tool
-#   todo: add kinetic energy meter
-#   todo: add molecule saving
 
 # todo: add overviews
 #   todo: add temperature overview
