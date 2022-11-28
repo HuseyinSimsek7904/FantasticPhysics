@@ -1,11 +1,17 @@
 from libs import options_lib
 import pygame
+import typing
 
 
 class Widget:
     """
-    Base widget class. Add super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to
-    __init__ when inheriting from this class.
+    Base widget class. Add
+    super().__init__(
+                shift=shift,
+                alignment=alignment,
+                master_alignment=master_alignment
+        )
+    to __init__ when inheriting from this class.
     """
 
     visible = True
@@ -64,6 +70,7 @@ class Widget:
         self.surface.fill(color)
 
     def update_rect(self):
+        self.rect = self.surface.get_rect()
         setattr(self.rect, self.alignment, pygame.Vector2(
             getattr(self.master.rect, self.master_alignment)) - self.master.rect.topleft + self.shift)
         self.full_rect = pygame.Rect(pygame.Vector2(self.rect.topleft) + pygame.Vector2(self.master.full_rect.topleft),
@@ -73,8 +80,13 @@ class Widget:
 class ListWidget(Widget):
     """
     Widget class with children. Add
-    super().__init__(*args, shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
-    inheriting from this class.
+    super().__init__(
+                *args,
+                shift=shift,
+                alignment=alignment,
+                master_alignment=master_alignment
+        )
+    to __init__ when inheriting from this class.
     """
     children: list[Widget] = None
 
@@ -94,6 +106,12 @@ class ListWidget(Widget):
 
     def __iter__(self):
         return iter(self.children)
+
+    def start(self):
+        self.update_rect()
+
+        for child in self:
+            child.start()
 
     def set_children(self, *children: Widget):
         self.kill_children()
@@ -138,7 +156,12 @@ class ListWidget(Widget):
 
 class Window(ListWidget):
     """
-    Window class. Add super().__init__(*args, screen_size=screen_size) to __init__ when inheriting from this class.
+    Window class. Add
+    super().__init__(
+                *args,
+                screen_size=screen_size
+        )
+    to __init__ when inheriting from this class.
     """
 
     def __init__(self,
@@ -180,64 +203,110 @@ class Window(ListWidget):
             else:
                 self.event_handler(event)
 
+    def start(self):
+        for child in self:
+            child.start()
 
-class TextWidget(Widget):
+
+class StaticTextWidget(Widget):
     """
-    Text object with one string. Add
-    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
-    inheriting from this class.
+    Text class that can only be used for static texts. Add
+    super().__init__(
+                shift=shift,
+                text=text,
+                font=font,
+                line_dif=line_dif,
+                color=color,
+                background_color=background_color,
+                alignment=alignment,
+                master_alignment=master_alignment
+        )
+    to __init__ when inheriting from this class. text attribute should be an iterable containing strings or bytes.
     """
 
-    def __init__(self,
-                 shift: pygame.Vector2,
-                 text: bytes | str, font: pygame.font.Font,
-                 color: str | tuple,
-                 alignment: str = "topleft",
-                 master_alignment: str = "topleft",
-                 background_color: str | tuple = None):
+    def __init__(
+            self,
+            shift: pygame.Vector2,
+            text: typing.Iterable,
+            font: pygame.font.Font,
+            color: str | tuple,
+            line_dif: pygame.Vector2 = pygame.Vector2(0, 0),
+            background_color: tuple | None = None,
+            alignment="topleft",
+            master_alignment="topleft"
+    ):
+
         super().__init__(
             shift,
             alignment,
-            master_alignment)
+            master_alignment
+        )
 
-        self.text = text
-        self.font = font
-        self.color = color
-        self.background = background_color
+        self.line_dif = line_dif
+
+        surfaces = []
+
+        for line_no, line in enumerate(text):
+            surface = font.render(line, True, color, background_color)
+            rect = surface.get_rect()
+            setattr(rect, self.alignment, line_no * self.line_dif)
+
+            surfaces.append((line, surface, rect))
+
+        left = 0
+        right = 0
+        top = 0
+        bottom = 0
+
+        for _, _, rect in surfaces:
+            left = min(left, rect.left)
+            right = max(right, rect.right)
+            top = min(top, rect.top)
+            bottom = max(bottom, rect.bottom)
+
+        self.set_surface(pygame.Surface((right - left, bottom - top), pygame.SRCALPHA))
+
+        for _, surface, rect in surfaces:
+            self.surface.blit(surface, pygame.Vector2(rect.topleft) - pygame.Vector2(left, top))
 
     def start(self):
-        self.update_surface()
-
-    def update_surface(self):
-        if not self.visible:
-            return
-
-        self.set_surface(self.font.render(self.text, True, self.color, self.background))
         self.update_rect()
 
 
-class TextListWidget(Widget):
+class DynamicTextWidget(Widget):
     """
-    Text class with more than one strings. Add
-    super().__init__(shift=shift, alignment=alignment, master_alignment=master_alignment) to __init__ when
-    inheriting from this class.
+    Text class that allows dynamic text rendering. Add
+    super().__init__(
+                shift=shift,
+                text=text,
+                font=font,
+                line_dif=line_dif,
+                color=color,
+                background_color=background_color,
+                alignment=alignment,
+                master_alignment=master_alignment
+        )
+    to __init__ when inheriting from this class. text attribute should be an iterable containing strings or bytes.
     """
     surfaces: list[tuple[str, pygame.Surface, pygame.Rect]] = None
 
-    def __init__(self,
-                 shift: pygame.Vector2,
-                 text: list,
-                 font: pygame.font.Font,
-                 line_dif: pygame.Vector2,
-                 color: str | tuple,
-                 background_color: tuple | None = None,
-                 alignment="topleft",
-                 master_alignment="topleft"):
+    def __init__(
+            self,
+            shift: pygame.Vector2,
+            text: iter,
+            font: pygame.font.Font,
+            color: str | tuple,
+            line_dif: pygame.Vector2 = pygame.Vector2(0, 0),
+            background_color: tuple | None = None,
+            alignment="topleft",
+            master_alignment="topleft"
+    ):
 
         super().__init__(
             shift,
             alignment,
-            master_alignment)
+            master_alignment
+        )
 
         self.font = font
         self.color = color
@@ -298,7 +367,7 @@ class TextListWidget(Widget):
             self.surface.blit(surface, pygame.Vector2(rect.topleft) - pygame.Vector2(self.get_rect().topleft))
 
 
-class Button(ListWidget):
+class ButtonWidget(ListWidget):
     """
     List widget with mouse click detection. Add
     super().__init__(
@@ -326,7 +395,7 @@ class Button(ListWidget):
                  button_up_event=lambda x: (),
                  motion_event=lambda x: (),
                  ):
-        super(Button, self).__init__(
+        super(ButtonWidget, self).__init__(
             *args,
             shift=shift,
             alignment=alignment,
@@ -347,9 +416,6 @@ class Button(ListWidget):
 
         for child in self:
             child.ask_for_draw(self.surface)
-
-    def update_rect(self):
-        super(Button, self).update_rect()
 
     @property
     def is_mouse_on(self):
@@ -378,3 +444,9 @@ class Button(ListWidget):
             self.motion_event(event)
 
         return True
+
+    def start(self):
+        self.update_surface()
+
+        for child in self:
+            child.start()
