@@ -29,12 +29,26 @@ class Camera:
     def screen_to_real_y(self, number):
         return int((number - self.screen_middle.y) / self.zoom_amount + self.pos.y)
 
-    def real_to_screen(self, vector: pygame.Vector2):
+    def real_to_screen_vector(self, vector: pygame.Vector2):
         new = (vector - self.pos) * self.zoom_amount + self.screen_middle
         return pygame.Vector2(int(new.x), int(new.y))
 
-    def screen_to_real(self, vector: pygame.Vector2):
+    def screen_to_real_vector(self, vector: pygame.Vector2):
         return (vector - self.screen_middle) / self.zoom_amount + self.pos
+
+    def real_to_screen_rect(self, rect: pygame.Rect):
+        return pygame.Rect(self.real_to_screen_vector(pygame.Vector2(rect.topleft)),
+                           self.real_to_screen_size(pygame.Vector2(rect.size)))
+
+    def screen_to_real_rect(self, rect: pygame.Rect):
+        return pygame.Rect(self.screen_to_real_vector(pygame.Vector2(rect.topleft)),
+                           self.screen_to_real_size(pygame.Vector2(rect.size)))
+
+    def real_to_screen_size(self, size: float | pygame.Vector2):
+        return size * self.zoom_amount
+
+    def screen_to_real_size(self, size: float | pygame.Vector2):
+        return size / self.zoom_amount
 
     def is_visible_screen(self, vector):
         return abs(vector.x - self.screen_middle.x) < self.screen_middle.x + \
