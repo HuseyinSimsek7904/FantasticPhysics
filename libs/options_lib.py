@@ -16,7 +16,7 @@ def load_options():
 
 def update_font(camera_zoom):
     global particles_font
-    particles_font = pygame.font.Font(pygame.font.get_default_font(), int(options["particles font size"] * camera_zoom))
+    particles_font = pygame.font.SysFont("Arial", int(options["particles font size"] * camera_zoom))
 
 
 options = {}
@@ -28,5 +28,4 @@ fullscreen = False
 load_options()
 
 pygame.init()
-particles_font = pygame.font.Font(pygame.font.get_default_font(), options["particles font size"])
-main_font = pygame.font.Font(pygame.font.get_default_font(), options["main font size"])
+particles_font = pygame.font.SysFont("Arial", int(options["particles font size"]))
