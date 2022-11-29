@@ -3,7 +3,6 @@ from collections import deque
 
 import pygame
 import math
-import random
 import json
 import os
 
@@ -20,34 +19,35 @@ class Game:
 
         self.topleft_menu = widgets_lib.DynamicTextWidget(
             shift=pygame.Vector2(0, 0),
-            text=[],
-            font=options_lib.main_font,
-            line_dif=pygame.Vector2(0, options_lib.main_font.get_height()),
+            text=[
+                "$fps",
+                "$particles"
+            ],
+            font_name="arial",
+            font_size=20,
+            line_dif=pygame.Vector2(0, 20),
             color=(0, 0, 0)
         )
 
         self.bottomright_menu = widgets_lib.DynamicTextWidget(
             shift=pygame.Vector2(0, 0),
-            text=["", ""],
-            font=options_lib.main_font,
-            line_dif=pygame.Vector2(0, options_lib.main_font.get_height()),
+            text=[
+                "$name",
+                "$grid_size"
+            ],
+            font_name="arial",
+            font_size=20,
+            line_dif=pygame.Vector2(0, 20),
             color=(0, 0, 0),
             alignment="bottomright",
             master_alignment="bottomright"
         )
 
-        self.particle_select_menu = widgets_lib.ButtonWidget(
-            shift=pygame.Vector2(-10, 10),
-            size=pygame.Vector2(300, 500),
-            color=(100, 100, 100, 100),
-            alignment="topright",
-            master_alignment="topright",
-        )
-
         self.static_particle_properties = widgets_lib.DynamicTextWidget(
             shift=pygame.Vector2(0, 0),
-            font=options_lib.main_font,
-            line_dif=pygame.Vector2(0, options_lib.main_font.get_height()),
+            font_name="arial",
+            font_size=20,
+            line_dif=pygame.Vector2(0, 20),
             color=(0, 0, 0),
             text=[
                 "$name"
@@ -58,8 +58,9 @@ class Game:
 
         self.dynamic_particle_properties = widgets_lib.DynamicTextWidget(
             shift=pygame.Vector2(0, 50),
-            font=options_lib.main_font,
-            line_dif=pygame.Vector2(0, options_lib.main_font.get_height()),
+            font_name="arial",
+            font_size=20,
+            line_dif=pygame.Vector2(0, 20),
             color=(0, 0, 0),
             text=[
                 "$velocity",
@@ -69,47 +70,124 @@ class Game:
             master_alignment="midtop"
         )
 
-        self.particle_select_menu.set_children(
+        self.particle_select_menu = widgets_lib.Frame(
             self.static_particle_properties,
             self.dynamic_particle_properties,
             widgets_lib.ButtonWidget(
                 widgets_lib.DynamicTextWidget(
                     shift=pygame.Vector2(0, 0),
                     text=("Remove particles",),
-                    font=options_lib.main_font,
+                    font_name="arial",
+                    font_size=20,
                     color=(0, 0, 0),
                     alignment="center",
                     master_alignment="center"
                 ),
-                shift=pygame.Vector2(0, 150),
+                shift=pygame.Vector2(0, -10),
                 size=pygame.Vector2(260, 50),
                 color=(200, 50, 50),
-                alignment="midtop",
-                master_alignment="midtop",
-                button_down_event=self.button_event_remove_focused
+                alignment="midbottom",
+                master_alignment="midbottom",
+                button_down_event=lambda _: self.remove_focused_particles()
             ),
             widgets_lib.ButtonWidget(
                 widgets_lib.DynamicTextWidget(
                     shift=pygame.Vector2(0, 0),
                     text=("Freeze particles",),
-                    font=options_lib.main_font,
+                    font_name="arial",
+                    font_size=20,
                     color=(0, 0, 0),
                     alignment="center",
                     master_alignment="center"
                 ),
-                shift=pygame.Vector2(0, 220),
+                shift=pygame.Vector2(0, -70),
                 size=pygame.Vector2(260, 50),
                 color=(100, 150, 250),
-                alignment="midtop",
-                master_alignment="midtop",
-                button_down_event=self.button_event_freeze_focused
-            )
+                alignment="midbottom",
+                master_alignment="midbottom",
+                button_down_event=lambda _: self.freeze_focused_particles()
+            ),
+            widgets_lib.ButtonWidget(
+                widgets_lib.DynamicTextWidget(
+                    shift=pygame.Vector2(0, 0),
+                    text=("Save particles",),
+                    font_name="arial",
+                    font_size=20,
+                    color=(0, 0, 0),
+                    alignment="center",
+                    master_alignment="center"
+                ),
+                shift=pygame.Vector2(0, -130),
+                size=pygame.Vector2(260, 50),
+                color=(20, 255, 50),
+                alignment="midbottom",
+                master_alignment="midbottom",
+                button_down_event=lambda _: self.quick_save_focused()
+            ),
+            shift=pygame.Vector2(-10, 10),
+            size=pygame.Vector2(300, 500),
+            color=(100, 100, 100, 100),
+            alignment="topright",
+            master_alignment="topright",
         )
+
+        # NOT USED YET
+        # =============================================================
+        self.mouse_menu = widgets_lib.Frame(
+            widgets_lib.DynamicTextWidget(
+                shift=pygame.Vector2(),
+                text=["This should not be seen."],
+                font_name="arial",
+                font_size=20,
+                color=(0, 0, 0),
+                line_dif=pygame.Vector2(0, 20),
+                alignment="midtop",
+                master_alignment="midtop"
+            ),
+            widgets_lib.DynamicTextWidget(
+                shift=pygame.Vector2(),
+                text=["This should also not be seen."],
+                font_name="arial",
+                font_size=20,
+                color=(0, 0, 0),
+                line_dif=pygame.Vector2(0, 20),
+                alignment="midtop",
+                master_alignment="midtop"
+            ),
+            shift=pygame.Vector2(),
+            color=(100, 100, 100, 100),
+            size=pygame.Vector2(500, 500)
+        )
+
+        self.splash_message = widgets_lib.DynamicTextWidget(
+            shift=pygame.Vector2(0, -100),
+            text=["$message", ],
+            font_name="arial",
+            font_size=20,
+            color=(0, 0, 0),
+            line_dif=pygame.Vector2(0, 20),
+            background_color=(100, 100, 100, 50),
+            alignment="midbottom",
+            master_alignment="midbottom",
+            vertical_padding=20,
+            horizontal_padding=20
+        )
+
+        self.splash_message_timer = 0
+        # =============================================================
+
+        self.mouse_menu.visible = False
         self.particle_select_menu.visible = False
 
         self.window.event_handler = self.event_handler
 
-        self.window.add_children(self.topleft_menu, self.bottomright_menu, self.particle_select_menu)
+        self.window.add_children(
+            self.topleft_menu,
+            self.bottomright_menu,
+            self.particle_select_menu,
+            self.mouse_menu,
+            self.splash_message
+        )
 
         self.particle_radius_square = options_lib.particle_radius ** 2
 
@@ -126,9 +204,6 @@ class Game:
 
         self.walls = True
         self.wall_radius = 500
-
-        self.average_kinetic = 0
-        self.average_potential = 0
 
         self.shown_particles = 0
 
@@ -148,12 +223,17 @@ class Game:
 
         self.window.start()
 
+    def update_splash_message(self, *messages):
+        self.splash_message.set_texts(*messages)
+
+        self.splash_message_timer = 2000
+
     def physics(self):
         if self.simulating:
             for particle_no, particle in enumerate(self.particles):
                 particle.vel += physics_lib.gravity * physics_lib.delta_time
 
-                if self.walls:
+                if self.walls and (self.pressed is not PRESSED_PARTICLE or particle not in self.focused_particles):
                     if particle.pos.x >= self.wall_radius:
                         particle.vel += pygame.Vector2(
                             physics_lib.kw * physics_lib.delta_time * (-self.wall_radius + particle.pos.x), 0)
@@ -181,27 +261,20 @@ class Game:
                             particle.muon_coefficient(other_particle),
                             distance, distance_sqr)
 
-                        particle.vel += force_vector * physics_lib.delta_time
-                        other_particle.vel -= force_vector * physics_lib.delta_time
+                        if self.pressed is not PRESSED_PARTICLE or particle not in self.focused_particles:
+                            particle.vel += force_vector * physics_lib.delta_time
+
+                        if self.pressed is not PRESSED_PARTICLE or other_particle not in self.focused_particles:
+                            other_particle.vel -= force_vector * physics_lib.delta_time
 
                 particle.pos += particle.vel * physics_lib.delta_time
 
-            kinetic, potential = self.calculate_energy()
-
-            self.average_kinetic = (self.average_kinetic * (
-                    AVERAGING_COEFFICIENT - 1) + kinetic) / AVERAGING_COEFFICIENT
-            self.average_potential = (self.average_potential * (
-                    AVERAGING_COEFFICIENT - 1) + potential) / AVERAGING_COEFFICIENT
-
     def draw(self):
-        # Reset
         self.window.window_surface.blit(self.camera.background, (0, 0))
 
-        # Shadow
-        pygame.draw.circle(self.window.window_surface, options_lib.colors["shadow"], self.screen_mouse_pos.xy,
-                           int(options_lib.particle_radius * self.camera.zoom_amount))
+        pygame.draw.circle(self.window.window_surface, options_lib.colors["shadow"], self.screen_mouse_pos,
+                           int(self.camera.real_to_screen_size(options_lib.particle_radius)))
 
-        # Particles
         shown_particles = 0
 
         for particle in self.particles:
@@ -220,77 +293,40 @@ class Game:
                     particle.rect.midbottom = self.camera.real_to_screen_vector(particle.pos + pygame.Vector2(0, -50))
                     self.window.window_surface.blit(particle.surface, particle.rect)
 
-        # Meter
         for particle in self.focused_particles:
             screen_pos = self.camera.real_to_screen_vector(particle.pos)
             distance = (self.real_mouse_pos - particle.pos) / physics_lib.rn
 
-            surface = options_lib.particles_font.render(f"{distance} ({int(distance.magnitude() * 100) / 100}) Rn",
-                                                        True, options_lib.colors["meter"])
+            surface = options_lib.particles_font.render(
+                f"{distance.x:.2f}, {distance.y:.2f} ({int(distance.magnitude() * 100) / 100}) ru",
+                True, options_lib.colors["meter"])
             rect = surface.get_rect()
             rect.midtop = pygame.Vector2(0, 50) + (screen_pos + self.screen_mouse_pos) / 2
             self.window.window_surface.blit(surface, rect)
             pygame.draw.line(self.window.window_surface, options_lib.colors["meter"], self.screen_mouse_pos, screen_pos)
 
-        # Selection rect
         if self.pressed is PRESSED_CTRL:
             copied = self.selection_rect.copy()
             copied.normalize()
             pygame.draw.rect(self.window.window_surface, options_lib.colors["meter"],
                              self.camera.real_to_screen_rect(copied), 2)
 
-        kinetic, potential = self.calculate_energy()
-
-        # Topleft menu
         self.topleft_menu.set_texts(
             f"FPS: {int(self.clock.get_fps() * FPS_ROUND) / FPS_ROUND}",
-            f"Particles: {len(self.particles)} ({shown_particles} shown)",
-            f"",
-            f"Kinetic: {kinetic:.2f}",
-            f"Temperature: {0 if not len(self.particles) else kinetic / len(self.particles):.2f}",
-            f"Potential: {potential:.2f}",
-            f"Total: {(potential + kinetic):.2f}",
-            f"Average Kinetic: {self.average_kinetic:.2f}",
-            f"Average Temperature: {0 if not len(self.particles) else self.average_kinetic / len(self.particles):.2f}",
-            f"Average Potential: {self.average_potential:.2f}",
-            f"Pressed {self.pressed}"
+            f"Particles: {len(self.particles)} ({shown_particles} shown)"
         )
         self.topleft_menu.update_surface()
 
         self.window.update_surface()
         self.window.render()
 
-    def calculate_energy(self):
-        kinetic = 0
-        potential = 0
-
-        for particle_no, particle in enumerate(self.particles):
-            kinetic += physics_lib.calculate_kinetic_energy_revion(particle)
-            potential += physics_lib.calculate_potential_energy_revion(particle, particle_no, self.particles)
-
-        return kinetic, potential
-
-    def reset_averaged(self):
-        self.average_kinetic, self.average_potential = self.calculate_energy()
-
     def toggle_simulation(self):
         self.simulating = not self.simulating
 
     def create_particle(self, particle):
         self.particles.append(particle)
-        self.reset_averaged()
 
-    # Button events
-    def button_event_remove_focused(self, _):
-        self.push_undo_history()
-
-        for particle in self.particles:
-            self.particles.remove(particle)
-
-        self.focused_particles.clear()
-        self.deselect_particles()
-
-    def button_event_freeze_focused(self, _):
+    def freeze_focused_particles(self):
         self.push_undo_history()
 
         for particle in self.focused_particles:
@@ -336,31 +372,20 @@ class Game:
 
         return total
 
-    def get_focused_kinetic(self):
-        return sum(physics_lib.calculate_kinetic_energy_revion(particle) for particle in self.focused_particles)
-
     def move_focused_particles(self, amount: pygame.Vector2):
         for particle in self.focused_particles:
             particle.pos += amount
-            particle.vel = pygame.Vector2()
 
-    def create_random_particle(self):
-        self.create_particle(particle_lib.Particle(random.randint(-1, 1),
-                                                   random.randint(-1, 1),
-                                                   0,
-                                                   random.randint(-1, 1),
-                                                   0,
-                                                   0,
-                                                   pygame.Vector2(
-                                                       random.randint(-int(self.wall_radius), int(self.wall_radius)),
-                                                       random.randint(-int(self.wall_radius), int(self.wall_radius)))))
+    def remove_focused_particles(self):
+        self.push_undo_history()
 
-    def select_particle(self, particle):
-        self.focused_particles.add(particle)
+        for particle in self.focused_particles:
+            self.particles.remove(particle)
 
-        self.update_static_select_menu()
+        self.focused_particles.clear()
+        self.deselect_all_particles()
 
-    def select_particles(self, *particles):
+    def select_particles(self, *particles: particle_lib.Particle):
         for particle in particles:
             self.focused_particles.add(particle)
 
@@ -386,27 +411,23 @@ class Game:
         else:
             self.particle_select_menu.visible = False
 
-    def switch_selection(self, particle):
-        if particle in self.focused_particles:
-            self.focused_particles.remove(particle)
+    def switch_selections(self, *particles: particle_lib.Particle):
+        for particle in particles:
+            if particle in self.focused_particles:
+                self.deselect_particle(particle)
 
-        else:
-            self.select_particle(particle)
+            else:
+                self.select_particles(particle)
 
         self.update_static_select_menu()
 
-    def deselect_particles(self):
+    def deselect_all_particles(self):
         self.focused_particles.clear()
         self.particle_select_menu.visible = False
 
     def deselect_particle(self, particle):
         self.focused_particles.remove(particle)
 
-        self.update_static_select_menu()
-
-    def clear_particles(self):
-        self.particles.clear()
-        self.focused_particles.clear()
         self.update_static_select_menu()
 
     def zoom(self, amount):
@@ -436,6 +457,9 @@ class Game:
             return
 
     def load_from_dict(self, data: dict):
+        if data["file-type"] != "simulation-data":
+            raise ValueError("Invalid data for simulation data")
+
         self.particles = []
 
         self.walls = data["walls"]["active"]
@@ -446,33 +470,41 @@ class Game:
 
     def get_dict(self):
         return {
+            "file-type": "simulation-data",
             "walls": {
                 "active": self.walls,
                 "radius": self.wall_radius
             },
-            "particles": [particle.get_dict() for particle in self.particles]
+            **self.get_dict_of_focused()
+        }
+
+    def save_focused_to_file(self, file_name):
+        with open(file_name, "w") as file:
+            json.dump(self.get_dict_of_focused(True), file)
+
+    def get_dict_of_focused(self, reset_velocity=False):
+        center_of_mass = self.get_focused_pos()
+        return {
+            "file-type": "molecule-data",
+            "particles": [particle.get_dict(center_of_mass, reset_velocity) for particle in self.focused_particles]
         }
 
     def load_from_file(self, file_name):
         with open(file_name) as file:
             self.load_from_dict(json.load(file))
 
-    def save_to_file(self, file_name):
-        with open(file_name, "w") as file:
-            json.dump(self.get_dict(), file)
-
-    def quick_save(self):
+    def quick_save_focused(self):
         file_no = 0
 
         while True:
             file_no += 1
 
-            path = f"saves/save_{str(file_no).rjust(4, '0')}.json"
+            path = f"molecules/molecule_{str(file_no).rjust(4, '0')}.json"
 
             if os.path.isfile(path):
                 continue
 
-            self.save_to_file(path)
+            self.save_focused_to_file(path)
             return
 
     def loop(self):
@@ -484,11 +516,22 @@ class Game:
             self.screen_mouse_pos.xy = pygame.mouse.get_pos()
             self.real_mouse_pos = self.camera.screen_to_real_vector(self.screen_mouse_pos)
 
+            self.mouse_menu.shift = self.screen_mouse_pos + pygame.Vector2(20, 20)
+            self.mouse_menu.update_rect()
+
+            self.splash_message.visible = self.splash_message_timer >= 0
+            self.splash_message.color = 0, 0, 0, min(max(self.splash_message_timer // 4, 0), 255)
+            self.splash_message.background = 100, 100, 100, min(max(self.splash_message_timer, 0) // 4, 255)
+            self.splash_message.update_surface()
+
             if self.particle_select_menu.visible:
+                kinetic, potential = physics_lib.calculate_energy(*self.focused_particles)
+
                 self.dynamic_particle_properties.set_texts(
-                    f"sum(V)/n = {self.get_focused_avg_vel().magnitude():.2f} rn/s",
-                    f"sum|V|/n = {self.get_focused_avg_vel_mag():.2f} rn/s",
-                    f"E = {self.get_focused_kinetic():.2f} R"
+                    f"sum(V)/n = {self.get_focused_avg_vel().magnitude():.2f} ru/s",
+                    f"sum||V||/n = {self.get_focused_avg_vel_mag():.2f} ru/s",
+                    f"E = {kinetic:.2f} R",
+                    f"H = {potential:.2f} R"
                 )
                 self.dynamic_particle_properties.update_surface()
                 self.particle_select_menu.update_surface()
@@ -496,6 +539,8 @@ class Game:
             self.physics()
             self.draw()
             self.clock.tick()
+
+            self.splash_message_timer -= self.clock.get_time()
 
     def event_handler(self, event):
         if event.type == pygame.QUIT:
@@ -505,13 +550,12 @@ class Game:
             self.zoom(event.y)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            self.window.focused = None
             if pygame.key.get_mods() & pygame.KMOD_CTRL and event.button == pygame.BUTTON_LEFT:
                 self.pressed = PRESSED_CTRL
                 self.selection_rect = pygame.Rect(self.real_mouse_pos, (0, 0))
 
             else:
-                self.window.focused = None
-
                 for particle in self.particles:
                     if (particle.pos - self.real_mouse_pos).magnitude_squared() <= \
                             self.particle_radius_square:
@@ -519,12 +563,14 @@ class Game:
                         # Mouse is on a particle
                         if event.button == pygame.BUTTON_LEFT and particle in self.focused_particles:
                             self.pressed = PRESSED_PARTICLE
+                            self.particle_select_menu.visible = False
+                            self.freeze_focused_particles()
 
                         elif event.button == pygame.BUTTON_RIGHT:
                             if not pygame.key.get_mods() & pygame.KMOD_CTRL:
-                                self.deselect_particles()
+                                self.deselect_all_particles()
 
-                            self.switch_selection(particle)
+                            self.switch_selections(particle)
 
                         return
 
@@ -540,7 +586,7 @@ class Game:
                     else:
                         self.pressed = PRESSED_NONE
 
-                    self.deselect_particles()
+                    self.deselect_all_particles()
 
                 elif event.button == pygame.BUTTON_RIGHT:
                     self.push_undo_history()
@@ -553,7 +599,7 @@ class Game:
                 self.camera.move(event.rel)
 
             elif self.pressed is PRESSED_PARTICLE:
-                self.move_focused_particles(pygame.Vector2(event.rel))
+                self.move_focused_particles(self.camera.screen_to_real_size(pygame.Vector2(event.rel)))
 
             elif self.pressed is PRESSED_WALL:
                 self.wall_radius = max(abs(self.real_mouse_pos.x), abs(self.real_mouse_pos.y))
@@ -567,99 +613,140 @@ class Game:
                 self.selection_rect.normalize()
 
                 if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                    self.deselect_particles()
+                    self.deselect_all_particles()
 
                 self.select_particles(*(particle for particle in self.particles if
                                         self.selection_rect.collidepoint(particle.pos)))
 
+            if self.pressed is PRESSED_PARTICLE:
+                self.particle_select_menu.visible = True
+
             self.pressed = NO_PRESS
 
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                self.toggle_simulation()
+            if event.mod & pygame.KMOD_CTRL:
+                if event.key == pygame.K_a:
+                    # CTRL + A
+                    self.select_particles(*self.particles)
 
-            elif event.key == pygame.K_a:
-                self.new_particle.a = (self.new_particle.a + 2) % 3 - 1
-                self.update_particle_picker()
+                elif event.key == pygame.K_f:
+                    self.push_undo_history()
 
-            elif event.key == pygame.K_b:
-                self.new_particle.b = (self.new_particle.b + 2) % 3 - 1
-                self.update_particle_picker()
+                    if self.focused_particles:
+                        self.freeze_focused_particles()
 
-            elif event.key == pygame.K_c:
-                self.new_particle.c = (self.new_particle.c + 2) % 3 - 1
-                self.update_particle_picker()
+                    else:
+                        self.select_particles(*self.particles)
+                        self.freeze_focused_particles()
+                        self.deselect_all_particles()
 
-            elif event.key == pygame.K_x:
-                self.new_particle.x = (self.new_particle.x + 2) % 3 - 1
-                self.update_particle_picker()
+                elif event.key == pygame.K_o:
+                    self.push_undo_history()
 
-            elif event.key == pygame.K_y:
-                if event.mod % pygame.KMOD_CTRL:
-                    self.pop_redo_history()
-                    return
+                    if self.focused_particles:
+                        self.remove_focused_particles()
 
-                self.new_particle.y = (self.new_particle.y + 2) % 3 - 1
-                self.update_particle_picker()
+                    else:
+                        self.select_particles(*self.particles)
+                        self.remove_focused_particles()
 
-            elif event.key == pygame.K_z:
-                if event.mod % pygame.KMOD_CTRL:
-                    self.pop_undo_history()
-                    return
+                elif event.key == pygame.K_d:
+                    self.push_undo_history()
 
-                self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
-                self.update_particle_picker()
+                    self.simulating = False
 
-            elif event.key == pygame.K_F2:
-                self.take_screenshot()
+                    if self.focused_particles:
+                        self.duplicate_focused_particles()
 
-            elif event.key == pygame.K_F3:
-                self.quick_save()
+                    else:
+                        self.select_particles(*self.particles)
+                        self.duplicate_focused_particles()
 
-            elif event.key == pygame.K_o:
-                self.push_undo_history()
-                self.clear_particles()
+            else:
+                if event.key == pygame.K_SPACE:
+                    self.toggle_simulation()
 
-            elif event.key == pygame.K_r:
-                self.push_undo_history()
-                self.clear_particles()
+                elif event.key == pygame.K_a:
+                    self.new_particle.a = (self.new_particle.a + 2) % 3 - 1
+                    self.update_particle_picker()
 
-                for i in range(int(4 * self.wall_radius * self.wall_radius / physics_lib.rn ** 2)):
-                    self.create_random_particle()
+                elif event.key == pygame.K_b:
+                    self.new_particle.b = (self.new_particle.b + 2) % 3 - 1
+                    self.update_particle_picker()
 
-            elif event.key == pygame.K_f:
-                self.push_undo_history()
+                elif event.key == pygame.K_c:
+                    self.new_particle.c = (self.new_particle.c + 2) % 3 - 1
+                    self.update_particle_picker()
 
-                for particle in self.particles:
-                    particle.vel = pygame.Vector2(0, 0)
+                elif event.key == pygame.K_x:
+                    self.new_particle.x = (self.new_particle.x + 2) % 3 - 1
+                    self.update_particle_picker()
 
-                self.reset_averaged()
+                elif event.key == pygame.K_y:
+                    if event.mod % pygame.KMOD_CTRL:
+                        self.pop_redo_history()
+                        return
 
-            elif event.key == pygame.K_TAB:
-                self.new_particle.reverse()
-                self.update_particle_picker()
+                    self.new_particle.y = (self.new_particle.y + 2) % 3 - 1
+                    self.update_particle_picker()
 
-            elif event.key == pygame.K_s:
-                self.simulating = True
-                self.physics()
-                self.simulating = False
+                elif event.key == pygame.K_z:
+                    if event.mod % pygame.KMOD_CTRL:
+                        self.pop_undo_history()
+                        return
 
-            elif event.key == pygame.K_t:
-                self.topleft_menu.visible = not self.topleft_menu.visible
+                    self.new_particle.z = (self.new_particle.z + 2) % 3 - 1
+                    self.update_particle_picker()
 
-            elif event.key == pygame.K_w:
-                self.push_undo_history()
-                self.walls = not self.walls
-                self.camera.get_background()
+                elif event.key == pygame.K_F2:
+                    self.take_screenshot()
 
-            elif event.key == pygame.K_KP_PLUS:
-                physics_lib.delta_time *= 1.5
+                elif event.key == pygame.K_F3:
+                    self.select_particles(*self.particles)
+                    self.quick_save_focused()
+                    self.deselect_all_particles()
 
-            elif event.key == pygame.K_KP_MINUS:
-                physics_lib.delta_time *= 2 / 3
+                elif event.key == pygame.K_TAB:
+                    self.new_particle.reverse()
+                    self.update_particle_picker()
 
-            elif event.key == pygame.K_ESCAPE:
-                self.running = False
+                elif event.key == pygame.K_w:
+                    self.push_undo_history()
+                    self.walls = not self.walls
+                    self.camera.get_background()
+
+                elif event.key == pygame.K_KP_PLUS:
+                    physics_lib.delta_time *= 1.5
+
+                elif event.key == pygame.K_KP_MINUS:
+                    physics_lib.delta_time *= 2 / 3
+
+                elif event.key == pygame.K_ESCAPE:
+                    self.running = False
+
+    def duplicate_focused_particles(self):
+        _, _, *size = self.focused_rect()
+        size = pygame.Vector2(size) + pygame.Vector2(1, 1) * physics_lib.rn
+
+        for particle in self.focused_particles:
+            self.create_particle(particle.copy())
+
+            particle.pos += size
+
+    def focused_rect(self):
+        if not self.focused_particles:
+            return pygame.rect.Rect(0, 0, 0, 0)
+
+        left = right = tuple(self.focused_particles)[0].pos.x
+        top = bottom = tuple(self.focused_particles)[0].pos.y
+
+        for particle in tuple(self.focused_particles)[1:]:
+            left = min(left, particle.pos.x)
+            top = min(top, particle.pos.y)
+            right = max(right, particle.pos.x)
+            bottom = max(bottom, particle.pos.y)
+
+        return pygame.Rect(left, top, right - left, bottom - top)
 
     def push_undo_history(self):
         self.redo_history = deque()
@@ -671,7 +758,7 @@ class Game:
 
         self.redo_history.append(([particle.copy() for particle in self.particles], self.walls, self.wall_radius))
         self.particles, self.walls, self.wall_radius = self.undo_history.pop()
-        self.deselect_particles()
+        self.deselect_all_particles()
 
     def pop_redo_history(self):
         if not len(self.redo_history):
@@ -679,7 +766,7 @@ class Game:
 
         self.undo_history.append(([particle.copy() for particle in self.particles], self.walls, self.wall_radius))
         self.particles, self.walls, self.wall_radius = self.redo_history.pop()
-        self.deselect_particles()
+        self.deselect_all_particles()
 
     def zoom_position(self):
         return (
