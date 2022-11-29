@@ -16,10 +16,11 @@ if args["load"]:
 game.loop()
 
 # MOST IMPORTANT
-# todo: organize functions like remove_all, remove_focused, ec.
-# todo: add CTRL-A to select all
 # todo: add molecule saving
+# todo: make text widgets use their own fonts
+
 # todo: rebuild widget system
+#   todo: add size with draw surface in ask_for_draw()
 
 # todo: change options_lib.py for better performance
 # todo: update trimers.json document using trimers.txt
