@@ -21,12 +21,17 @@ This is a weird simulation/math project that contains some made up physics laws.
 
 - **Left click** for moving the borders, particles *(bosons)* and the camera around.
 - **Right click** for selecting particles and creating particles.
+
+- **Mouse wheel** will make the camera zoom in/out.
+
 - **CTRL + Right click** for selecting multiple particles.
 - **CTRL + Left Click** for selecting using a selection box.
-- **F** key will cause all the particles to stop.
-- **T** key will show/hide the UI *(particle types, fps, energy meters)*.
+- **CTRL + F** will cause all the particles or focused particles if there is any.
+- **CTRL + O** will clear all particles or focused particles if there is any.
+- **CTRL + D** will duplicate all particles or focused particles if there is any.
+
 - **a, b, c, x, y and z** keys will change the muons of the particle that will be created.
+- **Tab** key will invert the muon.
 - **Space** key will make the simulation run/stop.
-- **Mouse wheel** will make the camera zoom in/out.
 - **+ and -** keys will increase/decrease the simulation time step.
-- **R** key will delete all particles and create random particles. Number of particles is equal to the area.
+- **W** key will toggle walls.
