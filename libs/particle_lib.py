@@ -63,10 +63,10 @@ class Particle:
     def copy(self):
         return Particle(self.a, self.b, self.c, self.x, self.y, self.z, self.pos.copy(), self.vel.copy())
 
-    def get_dict(self):
+    def get_dict(self, center_of_mass=pygame.Vector2(), reset_velocity=False):
         return {
-            "pos": tuple(self.pos),
-            "vel": tuple(self.vel),
+            "pos": tuple(self.pos - center_of_mass),
+            "vel": (0, 0) if reset_velocity else tuple(self.vel),
             "name": self.__repr__()
         }
 
