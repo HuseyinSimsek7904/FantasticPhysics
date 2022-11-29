@@ -87,21 +87,20 @@ def calculate_kinetic_energy_revion(particle: particle_lib.Particle):
     return particle.vel.magnitude_squared() / 2 / cp
 
 
-def calculate_potential_energy_revion(particle, particle_no, particles):
+def calculate_potential_energy_revion(particle, other_particle):
     """
     Calculates the potential energy in Revions.
     """
 
-    # FIXME
-    summed = - tsei_to_revion(particle.pos.y * gravity.y + particle.pos.x * gravity.x)
+    delta = other_particle.pos - particle.pos
+    x = delta.magnitude() / rn
 
-    for other_particle in particles[:particle_no]:
-        w = particle.muon_coefficient(other_particle)
-        delta = other_particle.pos - particle.pos
-        x = delta.magnitude() / rn
-        summed += (2 - 3 * x * w) / x / x / x
+    if x == 0:
+        return float("nan")
 
-    return summed
+    w = particle.muon_coefficient(other_particle)
+
+    return (2 - 3 * x * w) / x / x / x
 
 
 def net_force(w, distance, distance_sqr):
@@ -123,3 +122,19 @@ def phi(w1, w2):
     Calculates the phi value (linearity constant) for trigonics.
     """
     return w1 * w2 / (w1 + w2)
+
+
+def calculate_energy(*particles: particle_lib.Particle):
+    """
+    Calculates both kinetic and potential energy in Revions.
+    """
+    kinetic = 0
+    potential = 0
+
+    for particle_no, particle in enumerate(particles):
+        kinetic += calculate_kinetic_energy_revion(particle)
+
+        for other_particle in particles[:particle_no]:
+            potential += calculate_potential_energy_revion(particle, other_particle)
+
+    return kinetic, potential
