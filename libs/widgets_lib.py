@@ -76,6 +76,13 @@ class Widget:
         self.full_rect = pygame.Rect(pygame.Vector2(self.rect.topleft) + pygame.Vector2(self.master.full_rect.topleft),
                                      self.rect.size)
 
+    @property
+    def local_mouse_position(self):
+        return pygame.Vector2(pygame.mouse.get_pos()) - pygame.Vector2(self.full_rect.topleft)
+
+    def get_full_visible(self):
+        return self.visible and self.master.visible
+
 
 class ListWidget(Widget):
     """
@@ -108,7 +115,7 @@ class ListWidget(Widget):
         return iter(self.children)
 
     def start(self):
-        self.update_rect()
+        self.update_surface()
 
         for child in self:
             child.start()
@@ -152,6 +159,50 @@ class ListWidget(Widget):
                 return True
 
         return False
+
+
+class Frame(ListWidget):
+    """
+    List widget with mouse click detection. Add
+    super().__init__(
+                *args,
+                shift=shift,
+                color=color,
+                alignment=alignment,
+                master_alignment=master_alignment
+        )
+    to __init__ when inheriting from this class.
+    """
+
+    def __init__(self,
+                 *args,
+                 shift: pygame.Vector2,
+                 size: pygame.Vector2,
+                 color: tuple[int, int, int] | tuple[int, int, int, int],
+                 alignment: str = "topleft",
+                 master_alignment: str = "topleft"
+                 ):
+        super(Frame, self).__init__(
+            *args,
+            shift=shift,
+            alignment=alignment,
+            master_alignment=master_alignment
+        )
+
+        self.size = size
+        self.color = color
+
+    def update_surface(self):
+        self.set_surface(pygame.Surface(self.size, pygame.SRCALPHA))
+        self.update_rect()
+        self.fill_surface(self.color)
+
+        for child in self:
+            child.ask_for_draw(self.surface)
+
+    @property
+    def is_mouse_on(self):
+        return self.full_rect.collidepoint(pygame.mouse.get_pos())
 
 
 class Window(ListWidget):
@@ -208,71 +259,6 @@ class Window(ListWidget):
             child.start()
 
 
-class StaticTextWidget(Widget):
-    """
-    Text class that can only be used for static texts. Add
-    super().__init__(
-                shift=shift,
-                text=text,
-                font=font,
-                line_dif=line_dif,
-                color=color,
-                background_color=background_color,
-                alignment=alignment,
-                master_alignment=master_alignment
-        )
-    to __init__ when inheriting from this class. text attribute should be an iterable containing strings or bytes.
-    """
-
-    def __init__(
-            self,
-            shift: pygame.Vector2,
-            text: typing.Iterable,
-            font: pygame.font.Font,
-            color: str | tuple,
-            line_dif: pygame.Vector2 = pygame.Vector2(0, 0),
-            background_color: tuple | None = None,
-            alignment="topleft",
-            master_alignment="topleft"
-    ):
-
-        super().__init__(
-            shift,
-            alignment,
-            master_alignment
-        )
-
-        self.line_dif = line_dif
-
-        surfaces = []
-
-        for line_no, line in enumerate(text):
-            surface = font.render(line, True, color, background_color)
-            rect = surface.get_rect()
-            setattr(rect, self.alignment, line_no * self.line_dif)
-
-            surfaces.append((line, surface, rect))
-
-        left = 0
-        right = 0
-        top = 0
-        bottom = 0
-
-        for _, _, rect in surfaces:
-            left = min(left, rect.left)
-            right = max(right, rect.right)
-            top = min(top, rect.top)
-            bottom = max(bottom, rect.bottom)
-
-        self.set_surface(pygame.Surface((right - left, bottom - top), pygame.SRCALPHA))
-
-        for _, surface, rect in surfaces:
-            self.surface.blit(surface, pygame.Vector2(rect.topleft) - pygame.Vector2(left, top))
-
-    def start(self):
-        self.update_rect()
-
-
 class DynamicTextWidget(Widget):
     """
     Text class that allows dynamic text rendering. Add
@@ -288,18 +274,24 @@ class DynamicTextWidget(Widget):
         )
     to __init__ when inheriting from this class. text attribute should be an iterable containing strings or bytes.
     """
+
     surfaces: list[tuple[str, pygame.Surface, pygame.Rect]] = None
 
     def __init__(
             self,
             shift: pygame.Vector2,
             text: iter,
-            font: pygame.font.Font,
+            font_name: str,
+            font_size: int,
             color: str | tuple,
             line_dif: pygame.Vector2 = pygame.Vector2(0, 0),
             background_color: tuple | None = None,
             alignment="topleft",
-            master_alignment="topleft"
+            master_alignment="topleft",
+            horizontal_padding=0,
+            vertical_padding=0,
+            font_bold: bool = False,
+            font_italic: bool = False,
     ):
 
         super().__init__(
@@ -308,16 +300,30 @@ class DynamicTextWidget(Widget):
             master_alignment
         )
 
-        self.font = font
+        self.font: pygame.font.Font | None = None
+
+        self.font_name = font_name
+        self.font_size = font_size
+        self.font_bold = font_bold
+        self.font_italic = font_italic
+
+        self.update_font()
+
         self.color = color
         self.background = background_color
+
+        self.horizontal_padding = horizontal_padding
+        self.vertical_padding = vertical_padding
 
         self.line_dif = line_dif
 
         self.set_texts(*text)
 
+    def update_font(self):
+        self.font = pygame.font.SysFont(self.font_name, self.font_size, self.font_bold, self.font_italic)
+
     def __setitem__(self, key, value):
-        surface = self.font.render(value, True, self.color, self.background)
+        surface = self.font.render(value, True, self.color)
         rect = surface.get_rect()
         setattr(rect, self.alignment, key * self.line_dif)
 
@@ -333,7 +339,7 @@ class DynamicTextWidget(Widget):
             self.add_text(line)
 
     def add_text(self, new_text):
-        surface = self.font.render(new_text, True, self.color, self.background)
+        surface = self.font.render(new_text, True, self.color)
         rect = surface.get_rect()
         setattr(rect, self.alignment, len(self.surfaces) * self.line_dif)
 
@@ -351,7 +357,8 @@ class DynamicTextWidget(Widget):
             top = min(top, rect.top)
             bottom = max(bottom, rect.bottom)
 
-        return pygame.Rect(left, top, right - left, bottom - top)
+        return pygame.Rect(left - self.horizontal_padding, top - self.vertical_padding,
+                           right - left + self.horizontal_padding * 2, bottom - top + self.vertical_padding * 2)
 
     def start(self):
         self.update_surface()
@@ -361,6 +368,10 @@ class DynamicTextWidget(Widget):
             return
 
         self.set_surface(pygame.Surface(self.get_rect().size, pygame.SRCALPHA))
+
+        if self.background is not None:
+            self.fill_surface(self.background)
+
         self.update_rect()
 
         for _, surface, rect in self.surfaces:
@@ -426,7 +437,7 @@ class ButtonWidget(ListWidget):
         return pygame.Vector2(pygame.mouse.get_pos()) - pygame.Vector2(self.full_rect.topleft)
 
     def ask_for_event(self, event):
-        if not (self.visible and self.is_mouse_on):
+        if not (self.get_full_visible() and self.is_mouse_on):
             return False
 
         for child in self:
