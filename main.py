@@ -15,13 +15,6 @@ if args["load"]:
 
 game.loop()
 
-# MOST IMPORTANT
-# todo: add molecule saving
-# todo: make text widgets use their own fonts
-
-# todo: rebuild widget system
-#   todo: add size with draw surface in ask_for_draw()
-
 # todo: change options_lib.py for better performance
 # todo: update trimers.json document using trimers.txt
 # todo: add extra quick mode
@@ -29,7 +22,6 @@ game.loop()
 
 # todo: add molecule constructor
 # todo: add documentation to game
-# todo: add more details to energy meter
 # todo: add pressure calculation
 
 # todo: add overviews
